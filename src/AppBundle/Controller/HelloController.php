@@ -11,7 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 class HelloController extends ApiController
 {
     /**
-     * @Route("/public/hello/{name}")
+     * @Route("/public/v1/hello/{name}")
      * @Method("GET")
      */
     public function helloPublicAction(Request $request, $name = "Jenkins")
@@ -20,7 +20,7 @@ class HelloController extends ApiController
     }
 
     /**
-     * @Route("/hello/{name}")
+     * @Route("/user/v1/hello/{name}")
      * @Method("GET")
      */
     public function helloAction(Request $request)

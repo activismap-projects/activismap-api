@@ -18,5 +18,18 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        main:
-            anonymous: ~
+        oauth_token:
+            pattern:    ^/oauth/v2/token
+            security:   false
+
+        #oauth_authorize:
+            #pattern:    ^/oauth/v2/auth
+
+        api:
+            pattern:    ^/
+            fos_oauth:  true
+            stateless:  true
+            anonymous:  false # can be omitted as its default value
+
+    access_control:
+        - { path: ^/, roles: [ IS_AUTHENTICATED_FULLY ] }

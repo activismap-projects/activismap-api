@@ -6,7 +6,7 @@
  * Time: 11:55 AM
  */
 
-namespace AppBundle\Api\Rest;
+namespace AppBundle\Base;
 
 use JMS\Serializer\Annotation\XmlKeyValuePairs;
 

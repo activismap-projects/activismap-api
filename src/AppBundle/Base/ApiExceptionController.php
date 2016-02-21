@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace AppBundle\Base;
 
 use FOS\RestBundle\Controller\ExceptionController;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;

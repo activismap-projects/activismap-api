@@ -37,7 +37,7 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
-    exception_controller: AppBundle\Controller\ApiExceptionController::showAction
+    exception_controller: AppBundle\Base\ApiExceptionController::showAction
 
 # Doctrine Configuration
 doctrine:

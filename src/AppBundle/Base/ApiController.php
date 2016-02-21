@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace AppBundle\Base;
 
 use AppBundle\Commons\ApiResponse;
 use FOS\RestBundle\Controller\FOSRestController;

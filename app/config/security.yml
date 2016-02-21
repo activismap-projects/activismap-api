@@ -25,6 +25,10 @@ security:
         #oauth_authorize:
             #pattern:    ^/oauth/v2/auth
 
+        public:
+            pattern:    ^/public
+            security:   false
+
         api:
             pattern:    ^/
             fos_oauth:  true
@@ -33,3 +37,4 @@ security:
 
     access_control:
         - { path: ^/, roles: [ IS_AUTHENTICATED_FULLY ] }
+        - { path: ^/app/, roles: [ IS_AUTHENTICATED_ANONYMOUSLY ] }

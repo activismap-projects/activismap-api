@@ -26,6 +26,8 @@ find app -type f -exec sed "s/$OLDBUNDLENAME/$NEWBUNDLENAME/g" -i {} \;
 #php bin/console doctrine:schema:update --force
 #create database test;
 #grant all privileges on test.* to test@localhost identified by 'test';
+#setfacl -dR -m u:www-data:rwX -m u:lluis:rwX var
+#setfacl -R -m u:www-data:rwX -m u:lluis:rwX var
 
 
 

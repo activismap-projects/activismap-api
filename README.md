@@ -22,7 +22,7 @@ authenticated and unauthenticated routes.
 
 # Useful tricks
 
-* Vhost example (to allow user to code as himself and not root)
+* Apache vhost example (to allow user to code as himself and not root).
 
     ```
     <VirtualHost *:80>
@@ -52,19 +52,19 @@ authenticated and unauthenticated routes.
     
     ```
 
-* Postman base api (http://www.getpostman.com/)
+* Base api collection for Postman (http://www.getpostman.com/).
  
     https://www.getpostman.com/collections/91023b35e9d2386fc921
     
 
-* Create `client_id` and `client_secret`
+* Create `client_id` and `client_secret`.
     
     `php bin/console oauth2:client:create --grant-type="password" --grant-type="client_credentials" --grant-type="refresh_token"`
     
-* Create user
+* Create user.
 
     `php bin/console fos:user:create`
     
-* Promote user
+* Promote user.
 
     `php bin/console fos:user:promote myuser ROLE_ADMIN`

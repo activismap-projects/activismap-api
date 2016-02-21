@@ -20,14 +20,14 @@ class HelloController extends ApiController
     }
 
     /**
-     * @Route("/user/v1/hello/{name}")
+     * @Route("/user/v1/hello")
      * @Method("GET")
      */
     public function helloAction(Request $request)
     {
         $user = $this->get("security.token_storage")->getToken()->getUser();
         return $this->rest(
-            array("name" => $user->getName()),
+            array("name" => $user->getUsername()),
             "success",
             "Hello did OK"
         );

@@ -13,7 +13,7 @@ class CreateClientCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('oauht2:client:create')
+            ->setName('oauth2:client:create')
             ->setDescription('Creates a new client')
             ->addOption(
                 'redirect-uri',

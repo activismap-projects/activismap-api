@@ -22,40 +22,13 @@ authenticated and unauthenticated routes.
 
 # Useful tricks
 
-* Apache vhost example (to allow user to code as himself and not root).
+* Start the server with php5.4+ web server feature
 
-    ```
-    <VirtualHost *:80>
-    
-      ServerAdmin admin@localhost
-      ServerName api.my-awesome-domain.com
-      DocumentRoot /home/myuser/rest-projects/name-project/web/
-    
-      <Directory   /home/myuser/rest-projects/name-project/web/>
-        AllowOverride All
-        Require all Granted
-        Options -Indexes
-      </Directory>
-    
-      CustomLog /home/myuser/logs/name-project-access.log combined
-      ErrorLog /home/myuser/logs/name-project-error.log
-    
-    </VirtualHost>
-    ```
-* Fixing permissions problems with `var` directory because apache2 runs with different user than shell commands.
-
-    As `root` execute the following, this will give permissions to `myuser` and `www-data` to write in the `var` folder
-
-    ```
-    setfacl -dR -m u:www-data:rwX -m u:myuser:rwX var
-    setfacl -R -m u:www-data:rwX -m u:myuser:rwX var
-    
-    ```
+    `php bin/console server:run`
 
 * Base api collection for Postman (http://www.getpostman.com/).
  
     https://www.getpostman.com/collections/91023b35e9d2386fc921
-    
 
 * Create `client_id` and `client_secret`.
     

@@ -1,5 +1,5 @@
 FOS\UserBundle\Model\User:
-    exclusion_policy: NONE
+    exclusion_policy: ALL
     properties:
         salt:
             exclude: true

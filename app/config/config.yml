@@ -120,4 +120,16 @@ fos_oauth_server:
 
 
 
+jms_serializer:
+    metadata:
+        directories:
+            FOSUB:
+                namespace_prefix: "FOS\\UserBundle"
+                path: "%kernel.root_dir%/serializer/FOSUserBundle"
+    visitors:
+        json:
+            options: JSON_UNESCAPED_SLASHES
+
+
+
 

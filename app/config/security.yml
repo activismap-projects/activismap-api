@@ -41,4 +41,5 @@ security:
 
     access_control:
         - { path: ^/user/v[0-9]+/*, roles: [ IS_AUTHENTICATED_FULLY ] }
+        - { path: ^/admin/v[0-9]+/*, roles: [ ROLE_ADMIN ] }
         - { path: ^/app/v[0-9]+/*, roles: [ IS_AUTHENTICATED_ANONYMOUSLY ] }

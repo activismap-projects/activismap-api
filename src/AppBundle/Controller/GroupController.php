@@ -18,7 +18,7 @@ class GroupController extends CRUDApiController{
 
     protected function getRepositoryName()
     {
-        return "AppBundle::Group";
+        return "AppBundle:Group";
     }
 
 

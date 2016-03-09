@@ -20,7 +20,7 @@ class UserController extends CRUDApiController{
 
     protected function getRepositoryName()
     {
-        return "AppBundle::User";
+        return "AppBundle:User";
     }
 
     /**

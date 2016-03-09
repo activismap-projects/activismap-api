@@ -31,15 +31,15 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
 
         $entities = array_slice($all, $offset, $limit);
 
-        return $this->handleRestView(
-            "success",
-            "Request successful",
+        return $this->rest(
             array(
                 'total' => $total,
                 'start' => intval($offset),
                 'end' => (count($entities)+$offset-1)>0?(count($entities)+$offset-1):0,
                 'elements' => $entities
-            )
+            ),
+            "success",
+            "Request successful"
         );
     }
 
@@ -52,7 +52,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
 
         if(empty($entities)) throw new HttpException(404, "Not found");
 
-        return $this->handleRestView("ok", "Request successful", $entities);
+        return $this->rest($entities, "success", "Request successful");
     }
 
     public function create(Request $request){
@@ -85,7 +85,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
             throw new HttpException(500, "Unknown error occurred when save");
         }
 
-        return $this->handleRestView("ok", "Created successfully", array('id'=>$entity->getId()));
+        return $this->rest(array('id'=>$entity->getId()), "success", "Created successfully");
     }
 
     public function update(Request $request, $id){
@@ -124,7 +124,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
             throw new HttpException(500, "Unknown error occurred when save");
         }
 
-        return $this->handleRestView("ok", "Updated successfully");
+        return $this->rest(null, "success", "Updated successfully");
     }
 
     public function delete(Request $request, $id){
@@ -140,7 +140,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
         $em->remove($entity);
         $em->flush();
 
-        return $this->handleRestView("ok", "Deleted successfully", array());
+        return $this->rest(null, "success", "Deleted successfully");
     }
 
     private function attributeToSetter($str) {

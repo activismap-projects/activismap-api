@@ -7,8 +7,8 @@ Here are the steps to start a new project:
 
 1. Fork the repository from github.com (https://github.com/EntropyFactory/base-rest-api)
 2. Execute `./setup.sh NameBundle` to change the Bundle namespace as you like.
-3. Point your vhost to the `web` folder.
-4. Setup `app/config/parameters.yml` with your settings.
+3. Create the database for the project
+4. Install composer dependences with `composer install` and fill the database settings.
 5. Create the required tables in database:
 
     `php bin/console doctrine:schema:update --force`

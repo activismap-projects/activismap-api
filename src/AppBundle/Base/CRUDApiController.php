@@ -2,6 +2,7 @@
 
 namespace AppBundle\Base;
 
+use AppBundle\Entity\User;
 use Doctrine\DBAL\DBALException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -16,7 +17,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
             ->getRepository($this->getRepositoryName());
     }
 
-    public function index(Request $request){
+    public function indexAction(Request $request){
 
         if($request->query->has('limit')) $limit = $request->query->get('limit');
         else $limit = 10;
@@ -43,7 +44,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
         );
     }
 
-    public function show(Request $request, $id){
+    public function showAction(Request $request, $id){
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
 
         $repo = $this->getRepository();
@@ -55,7 +56,7 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
         return $this->rest($entities, "success", "Request successful");
     }
 
-    public function create(Request $request){
+    public function createEntity(Request $request){
         $entity = $this->getNewEntity();
 
         $params = $request->request->all();
@@ -66,13 +67,13 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
                 if (method_exists($entity, $setter)) {
                     call_user_func_array(array($entity, $setter), array($value));
                 }
-                else{
-                    throw new HttpException(400, "Bad request, parameter '$name' is wrong");
-                }
             }
         }
 
+        return $entity;
+    }
 
+    protected function save($entity) {
         $em = $this->getDoctrine()->getManager();
         $em->persist($entity);
         try{
@@ -81,14 +82,19 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
             if(preg_match('/1062 Duplicate entry/i',$e->getMessage()))
                 throw new HttpException(409, "Duplicated resource");
             else if(preg_match('/1048 Column/i',$e->getMessage()))
-                throw new HttpException(400, "Bad parameters");
+                //throw $e;
+                throw new HttpException(400, "Bad parameters: " . $e->getMessage());
             throw new HttpException(500, "Unknown error occurred when save");
         }
-
-        return $this->rest(array('id'=>$entity->getId()), "success", "Created successfully");
     }
 
-    public function update(Request $request, $id){
+    protected function createAction(Request $request){
+        $entity = $this->createEntity($request);
+        $this->save($entity);
+        return $this->rest($entity);
+    }
+
+    public function updateAction(Request $request, $id){
 
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
 
@@ -112,22 +118,12 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
             }
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($entity);
-        try{
-            $em->flush();
-        } catch(DBALException $e){
-            if(preg_match('/1062 Duplicate entry/i',$e->getMessage()))
-                throw new HttpException(409, "Duplicated resource");
-            else if(preg_match('/1048 Column/i',$e->getMessage()))
-                throw new HttpException(400, "Bad parameters");
-            throw new HttpException(500, "Unknown error occurred when save");
-        }
+        $this->save($entity);
 
         return $this->rest(null, "success", "Updated successfully");
     }
 
-    public function delete(Request $request, $id){
+    public function deleteAction(Request $request, $id){
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
 
         $repo = $this->getRepository();
@@ -146,5 +142,32 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
     private function attributeToSetter($str) {
         $func = create_function('$c', 'return strtoupper($c[1]);');
         return preg_replace_callback('/_([a-z])/', $func, "set_".$str);
+    }
+
+    /**
+     * @return \Doctrine\Common\Persistence\ObjectManager|object
+     */
+    protected function getEntityManager() {
+        return $this->getDoctrine()->getManager();
+    }
+
+    /**
+     * @return User
+     */
+    protected function getUser() {
+        return $this->container->get("security.token_storage")->getToken()->getUser();
+    }
+
+    protected function _checkParams(Request $request, array $params) {
+        $req_params = array();
+        foreach ($params as $param) {
+            if(!$request->request->has($param)) {
+                throw new HttpException(400, "Param '" . $param . "' not found");
+            } else {
+                $req_params[$param] = $request->request->get($param);
+            }
+        }
+
+        return $req_params;
     }
 }

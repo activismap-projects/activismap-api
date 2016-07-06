@@ -36,6 +36,29 @@ class ApiController extends FOSRestController{
     }
 
     /**
+     * @param Request $request
+     * @param $entity
+     * @param array $array
+     * @param bool $throwError
+     * @return bool
+     */
+    protected function checkExist(Request $request, $entity, array $array, $throwError = true){
+        $em = $this->getDoctrine()->getManager();
+        for($i = 0; $i < sizeof($array); $i++){
+            $aux = trim($request->get($array[$i]));
+            if($em->getRepository('AppBundle:'.$entity)->findOneBy(array($array[$i] => $aux))){
+                if ($throwError) {
+                    throw new HttpException(409, $array[$i] . " '" . $aux . "' already used");
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @return User
      */
     protected function getUser() {

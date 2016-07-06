@@ -2,8 +2,13 @@
 
 namespace AppBundle\Base;
 
+use AppBundle\Entity\User;
+use Doctrine\DBAL\DBALException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 class ApiController extends FOSRestController{
@@ -12,5 +17,138 @@ class ApiController extends FOSRestController{
             $data,$status,$message
         );
         return $this->handleView($this->view($response, $httpCode));
+    }
+
+    public function save($entity) {
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($entity);
+        try{
+            $em->flush();
+        } catch(DBALException $e){
+            if(preg_match('/1062 Duplicate entry/i',$e->getMessage())) {
+                throw new HttpException(409, "Duplicated resource, " . $e->getMessage());
+            } else if(preg_match('/1048 Column/i',$e->getMessage())) {
+                //throw $e;
+                throw new HttpException(400, "Bad parameters: " . $e->getMessage());
+            }
+            throw new HttpException(500, "Unknown error occurred when save " . $e->getMessage());
+        }
+    }
+
+    /**
+     * @return User
+     */
+    protected function getUser() {
+        return $this->container->get("security.token_storage")->getToken()->getUser();
+    }
+
+    /**
+     * @param Request $request
+     * @param array $params
+     * @param array $optional_params
+     * @return array
+     */
+    protected function checkParams(Request $request, array $params, $optional_params = array()) {
+        $req_params = array();
+        foreach ($params as $param) {
+            //die(print_r($request->request->get($param), true));
+            if(!$request->request->has($param)) {
+                throw new HttpException(400, "Param '" . $param . "' not found");
+            } else {
+                $req_params[$param] = $request->request->get($param);
+            }
+        }
+
+        foreach ($optional_params as $op) {
+            if ($request->request->has($op)) {
+                $req_params[$op] = $request->request->get($op);
+            }
+        }
+
+        return $req_params;
+    }
+
+    /**
+     * @param Request $request
+     * @param array $params
+     * @return array
+     */
+    protected function checkFiles(Request $request, array $params) {
+        $req_params = array();
+        foreach ($params as $param) {
+            if(!$request->files->has($param)) {
+                throw new HttpException(400, "File '" . $param . "' not provided");
+            } else {
+                $req_params[$param] = $request->files->get($param);
+            }
+        }
+
+        return $req_params;
+    }
+
+    /**
+     * @param $tempFile
+     * @param $filename
+     * @return array
+     */
+    public function saveFile($tempFile, $filename) {
+        $filepath = $this->get('kernel')->getRootDir() . "/../web/files/";
+
+        if ($filename != '') {
+            $ext = substr($filename, strpos($filename, '.'), strlen($filename));
+            $filename = uniqid() . $ext;
+
+            $f = fopen($tempFile, 'rb');
+            $content = fread($f, filesize($tempFile));
+            $fs = new Filesystem();
+            $fs->dumpFile($filepath . $filename, $content);
+            fclose($tempFile);
+
+            $baseUrl = "http://" . $_SERVER['HTTP_HOST'];
+
+            $data = array();
+            $data['local_path'] = $filepath . $filename;
+            $data['url'] = $baseUrl . '/files/' . $filename;
+            $data['size'] = filesize($filepath . $filename);
+            return $data;
+        }
+
+        throw new HttpException(400, 'Invalid file or filename');
+    }
+
+    /**
+     * @param string $filename
+     * @param string $file
+     * @return array
+     */
+    public function saveFile64($filename, $file) {
+        $filepath = $this->get('kernel')->getRootDir() . "/../web/files/";
+
+        if ($file != '' && $filename != '') {
+            $ext = substr($filename, strpos($filename, '.'), strlen($filename));
+            $filename = uniqid() . $ext;
+            $fs = new Filesystem();
+            $fs->dumpFile($filepath . $filename, base64_decode($file));
+
+            $baseUrl = "http://" . $_SERVER['HTTP_HOST'];
+
+            $data = array();
+            $data['local_path'] = $filepath . $filename;
+            $data['url'] = $baseUrl . '/files/' . $filename;
+            $data['size'] = filesize($filepath . $filename);
+            return $data;
+        }
+
+        throw new HttpException(400, 'Invalid file or filename');
+    }
+
+    /**
+     * @param integer $id
+     * @return User
+     */
+    protected function getUserById($id) {
+        return $this->getDoctrine()
+            ->getManager()
+            ->getRepository('AppBundle:User')->find($id);
     }
 }

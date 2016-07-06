@@ -75,15 +75,15 @@ class ApiController extends FOSRestController{
         $req_params = array();
         foreach ($params as $param) {
             //die(print_r($request->request->get($param), true));
-            if(!$request->request->has($param)) {
-                throw new HttpException(400, "Param '" . $param . "' not found");
+            if(!$request->request->has($param) || empty($request->request->get($param))) {
+                throw new HttpException(400, "Param '" . $param . "' is required.");
             } else {
                 $req_params[$param] = $request->request->get($param);
             }
         }
 
         foreach ($optional_params as $op) {
-            if ($request->request->has($op)) {
+            if ($request->request->has($op) && !empty($request->request->get($op))) {
                 $req_params[$op] = $request->request->get($op);
             }
         }
@@ -94,19 +94,26 @@ class ApiController extends FOSRestController{
     /**
      * @param Request $request
      * @param array $params
+     * @param array $optional_files
      * @return array
      */
-    protected function checkFiles(Request $request, array $params) {
-        $req_params = array();
+    protected function checkFiles(Request $request, array $params, $optional_files = array()) {
+        $req_files = array();
         foreach ($params as $param) {
             if(!$request->files->has($param)) {
-                throw new HttpException(400, "File '" . $param . "' not provided");
+                throw new HttpException(400, "File param '" . $param . "' not provided.");
             } else {
-                $req_params[$param] = $request->files->get($param);
+                $req_files[$param] = $request->files->get($param);
             }
         }
 
-        return $req_params;
+        foreach ($optional_files as $op) {
+            if ($request->files->has($op) && !empty($request->files->get($op))) {
+                $req_files[$op] = $request->request->get($op);
+            }
+        }
+
+        return $req_files;
     }
 
     /**

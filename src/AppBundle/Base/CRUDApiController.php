@@ -73,21 +73,6 @@ abstract class CRUDApiController extends ApiController implements CRUDInterface{
         return $entity;
     }
 
-    protected function save($entity) {
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($entity);
-        try{
-            $em->flush();
-        } catch(DBALException $e){
-            if(preg_match('/1062 Duplicate entry/i',$e->getMessage()))
-                throw new HttpException(409, "Duplicated resource");
-            else if(preg_match('/1048 Column/i',$e->getMessage()))
-                //throw $e;
-                throw new HttpException(400, "Bad parameters: " . $e->getMessage());
-            throw new HttpException(500, "Unknown error occurred when save");
-        }
-    }
-
     protected function createAction(Request $request){
         $entity = $this->createEntity($request);
         $this->save($entity);

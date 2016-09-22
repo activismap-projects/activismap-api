@@ -1,14 +1,14 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace ActivisMap\Entity;
 
-use FOS\OAuthServerBundle\Entity\AuthCode as BaseAuthCode;
+use FOS\OAuthServerBundle\Entity\RefreshToken as BaseRefreshToken;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class AuthCode extends BaseAuthCode
+class RefreshToken extends BaseRefreshToken
 {
   /**
    * @ORM\Id
@@ -24,7 +24,7 @@ class AuthCode extends BaseAuthCode
   protected $client;
 
   /**
-   * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+   * @ORM\ManyToOne(targetEntity="ActivisMap\Entity\User")
    */
   protected $user;
 }

@@ -1,7 +1,7 @@
 <?php
-// src/AppBundle/Entity/User.php
+// src/ActivisMap/Entity/User.php
 
-namespace AppBundle\Entity;
+namespace ActivisMap\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,19 +19,31 @@ class User extends BaseUser
    */
   protected $id;
 
-
   /**
-   * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Group")
-   * @ORM\JoinTable(name="fos_user_user_group",
-   *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-   *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
-   * )
+   * @ORM\Column(type="string", nullable=true)
+   * @var string
    */
-  protected $groups;
+  protected $personName;
 
   public function __construct()
   {
     parent::__construct();
     // your own logic
+  }
+
+  /**
+   * @return string
+   */
+  public function getPersonName()
+  {
+    return $this->personName;
+  }
+
+  /**
+   * @param string $personName
+   */
+  public function setPersonName($personName)
+  {
+    $this->personName = $personName;
   }
 }

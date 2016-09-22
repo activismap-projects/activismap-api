@@ -6,7 +6,7 @@
  * Time: 8:52 PM
  */
 
-namespace AppBundle\Base;
+namespace ActivisMap\Base;
 
 
 

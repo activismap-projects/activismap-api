@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace ActivisMap\Controller;
 
-use AppBundle\Base\ApiController;
-use AppBundle\Base\CRUDApiController;
+use ActivisMap\Base\ApiController;
+use ActivisMap\Base\CRUDApiController;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
  * Class UserController
- * @package AppBundle\Controller
+ * @package ActivisMap\Controller
  * @Route("/admin/v1/users")
  */
 class UserController extends CRUDApiController{
@@ -20,7 +20,7 @@ class UserController extends CRUDApiController{
 
     protected function getRepositoryName()
     {
-        return "AppBundle:User";
+        return "ActivisMap:User";
     }
 
     /**

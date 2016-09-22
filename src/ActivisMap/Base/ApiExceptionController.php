@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Base;
+namespace ActivisMap\Base;
 
 use FOS\RestBundle\Controller\ExceptionController;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;

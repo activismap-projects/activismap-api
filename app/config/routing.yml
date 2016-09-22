@@ -5,7 +5,7 @@ fos_oauth_server_authorize:
     resource: "@FOSOAuthServerBundle/Resources/config/routing/authorize.xml"
 
 app:
-    resource: "@AppBundle/Controller/"
+    resource: "@ActivisMap/Controller/"
     type:     annotation
 
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace ActivisMap\Controller;
 
-use AppBundle\Base\ApiController;
-use AppBundle\Base\CRUDApiController;
+use ActivisMap\Base\ApiController;
+use ActivisMap\Base\CRUDApiController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,14 +11,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
  * Class GroupController
- * @package AppBundle\Controller
+ * @package ActivisMap\Controller
  * @Route("/admin/v1/groups")
  */
 class GroupController extends CRUDApiController{
 
     protected function getRepositoryName()
     {
-        return "AppBundle:Group";
+        return "ActivisMap:Group";
     }
 
 

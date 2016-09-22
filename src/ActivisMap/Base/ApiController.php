@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Base;
+namespace ActivisMap\Base;
 
-use AppBundle\Entity\User;
+use ActivisMap\Entity\User;
 use Doctrine\DBAL\DBALException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 class ApiController extends FOSRestController{
+
     public function rest($data = null, $status = "ok", $message = "Request success", $httpCode = 200){
         $response = new ApiResponse(
             $data,$status,$message
@@ -46,7 +47,7 @@ class ApiController extends FOSRestController{
         $em = $this->getDoctrine()->getManager();
         for($i = 0; $i < sizeof($array); $i++){
             $aux = trim($request->get($array[$i]));
-            if($em->getRepository('AppBundle:'.$entity)->findOneBy(array($array[$i] => $aux))){
+            if($em->getRepository('ActivisMap:'.$entity)->findOneBy(array($array[$i] => $aux))){
                 if ($throwError) {
                     throw new HttpException(409, $array[$i] . " '" . $aux . "' already used");
                 }
@@ -179,6 +180,6 @@ class ApiController extends FOSRestController{
     protected function getUserById($id) {
         return $this->getDoctrine()
             ->getManager()
-            ->getRepository('AppBundle:User')->find($id);
+            ->getRepository('ActivisMap:User')->find($id);
     }
 }

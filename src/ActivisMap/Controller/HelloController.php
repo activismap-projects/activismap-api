@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace ActivisMap\Controller;
 
-use AppBundle\Base\ApiController;
+use ActivisMap\Base\ApiController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;

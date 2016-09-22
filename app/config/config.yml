@@ -37,7 +37,7 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
-    exception_controller: AppBundle\Base\ApiExceptionController::showAction
+    exception_controller: ActivisMap\Base\ApiExceptionController::showAction
 
 # Doctrine Configuration
 doctrine:
@@ -73,7 +73,7 @@ swiftmailer:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
-    user_class: AppBundle\Entity\User
+    user_class: ActivisMap\Entity\User
 
 
 
@@ -111,10 +111,10 @@ nelmio_cors:
 
 fos_oauth_server:
     db_driver: orm       # Driver availables: orm, mongodb, or propel
-    client_class:        AppBundle\Entity\Client
-    access_token_class:  AppBundle\Entity\AccessToken
-    refresh_token_class: AppBundle\Entity\RefreshToken
-    auth_code_class:     AppBundle\Entity\AuthCode
+    client_class:        ActivisMap\Entity\Client
+    access_token_class:  ActivisMap\Entity\AccessToken
+    refresh_token_class: ActivisMap\Entity\RefreshToken
+    auth_code_class:     ActivisMap\Entity\AuthCode
     service:
         user_provider: fos_user.user_provider.username_email
 

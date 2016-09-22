@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle;
+namespace ActivisMap;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class AppBundle extends Bundle
+class ActivisMap extends Bundle
 {
 }

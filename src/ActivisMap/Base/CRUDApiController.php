@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Base;
+namespace ActivisMap\Base;
 
-use AppBundle\Entity\User;
+use ActivisMap\Entity\User;
 use Doctrine\DBAL\DBALException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;

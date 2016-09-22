@@ -6,7 +6,7 @@
  * Time: 11:55 AM
  */
 
-namespace AppBundle\Base;
+namespace ActivisMap\Base;
 
 use JMS\Serializer\Annotation\XmlKeyValuePairs;
 

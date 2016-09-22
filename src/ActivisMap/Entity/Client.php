@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace ActivisMap\Entity;
 
 use FOS\OAuthServerBundle\Entity\Client as BaseClient;
 use Doctrine\ORM\Mapping as ORM;

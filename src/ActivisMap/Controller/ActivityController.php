@@ -8,7 +8,6 @@
 
 namespace ActivisMap\Controller;
 
-
 use ActivisMap\Base\Neo4jController;
 use ActivisMap\Entity\Activity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

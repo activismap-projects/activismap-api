@@ -129,6 +129,7 @@ jms_serializer:
         json:
             options: JSON_UNESCAPED_SLASHES
 
-
+nelmio_api_doc:
+    name: ActivisMap API Documentation
 
 

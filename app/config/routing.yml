@@ -8,4 +8,6 @@ app:
     resource: "@ActivisMap/Controller/"
     type:     annotation
 
-
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc

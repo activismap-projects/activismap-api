@@ -37,9 +37,8 @@ security:
             pattern:    ^/
             fos_oauth:  true
             stateless:  true
-            anonymous:  false # can be omitted as its default value
+            anonymous:  true # can be omitted as its default value
 
     access_control:
-        - { path: ^/user/v[0-9]+/*, roles: [ IS_AUTHENTICATED_FULLY ] }
-        - { path: ^/admin/v[0-9]+/*, roles: [ ROLE_ADMIN ] }
-        - { path: ^/app/v[0-9]+/*, roles: [ IS_AUTHENTICATED_ANONYMOUSLY ] }
+        - { path: ^/api/v[0-9]+/public*, roles: [ IS_AUTHENTICATED_ANONYMOUSLY ] }
+        - { path: ^/api/v[0-9]+/activity*, roles: [ ROLE_USER ] }

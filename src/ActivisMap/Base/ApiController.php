@@ -3,9 +3,11 @@
 namespace ActivisMap\Base;
 
 use ActivisMap\Entity\User;
+use ActivisMap\Util\GCMSender;
 use Doctrine\DBAL\DBALException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use HireVoice\Neo4j\EntityManager;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -54,6 +56,24 @@ class ApiController extends FOSRestController{
 
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $object
+     * @param $message
+     * @param bool|true $throwError
+     * @return bool
+     */
+    protected function checkNull($object, $message, $throwError = true) {
+        if ($object == null || $object == false) {
+            if ($throwError) {
+                throw new HttpException(404, $message);
+            }
+
+            return true;
         }
 
         return false;
@@ -174,6 +194,49 @@ class ApiController extends FOSRestController{
     }
 
     /**
+     * @return \Doctrine\Common\Persistence\ObjectManager
+     */
+    public function getManager() {
+        return $this->getDoctrine()->getManager();
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getNeoManager() {
+        return $this->get('neo4j.entity_manager');
+    }
+
+    /**
+     * @return NeoQuery
+     */
+    public function getNeoQuery() {
+        return new NeoQuery($this->getNeoManager());
+    }
+
+    /**
+     * @return int
+     */
+    public function getMilliseconds() {
+        return (int) round(microtime(true) * 1000);
+    }
+
+    /**
+     * @return GCMSender
+     */
+    protected function getGCMSender() {
+        return new GCMSender($this->getManager());
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function getParameter($name) {
+        return $this->container->getParameter($name);
+    }
+
+    /**
      * @param integer $id
      * @return User
      */
@@ -181,5 +244,35 @@ class ApiController extends FOSRestController{
         return $this->getDoctrine()
             ->getManager()
             ->getRepository('ActivisMap:User')->find($id);
+    }
+
+    /**
+     * @return \Swift_Mailer
+     */
+    public function getMailer() {
+        return $this->container->get('mailer');
+    }
+
+    /**
+     * @param string $templateName
+     * @param array $body
+     * @param string $subject
+     * @param string $from
+     * @param array $to
+     * @param string $contentType
+     * @param array $bcc
+     */
+    public function sendMail($templateName, $body, $subject, $from, $to,  $bcc = array(), $contentType = 'text/html') {
+        $email = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setFrom($from)
+            ->setBcc($bcc)
+            ->setTo($to);
+
+
+        $template = $this->container->get('templating')->render($templateName, $body);
+        $email->setBody($template)
+            ->setContentType($contentType);
+        $this->getMailer()->send($email);
     }
 }

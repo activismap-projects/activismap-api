@@ -1,5 +1,8 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
+imports:
+    - { resource: custom_parameters.yml }
+
 parameters:
 #    parameter_name: value
 
@@ -7,3 +10,6 @@ services:
 #    service_name:
 #        class: ActivisMap\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+  neo4j.entity_manager:
+    class: HireVoice\Neo4j\EntityManager
+    arguments: ["%neo4j_parameters%"]

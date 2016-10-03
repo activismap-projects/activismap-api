@@ -85,30 +85,6 @@ class PublicController extends Neo4jController {
 
     }
 
-    /**
-     * @ApiDoc(
-     *      section="Administración",
-     *      description="Crear nueva Aplicacion",
-     *      parameters = {
-     *          {"name"="name", "dataType"="string", "required"=true, "format"="UTF-8", "description"="Nombre de la aplicación"}
-     *      },
-     *      output = "AppBundle\Entity\Application"
-     * )
-     * @Route("/createApp")
-     * @Method("POST")
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function createApplication(Request $request) {
-        $params = $this->checkParams($request, array('name'));
-
-        $app = new Application();
-        $app->setName($params['name']);
-        $this->saveInNeo($app);
-
-        return $this->rest($app->getBaseView());
-    }
-
     public function searchActivities(Request $request) {
 
     }

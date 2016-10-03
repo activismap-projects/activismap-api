@@ -33,8 +33,10 @@ class ActivityController extends Neo4jController {
         $user = $this->getNeoUser();
 
         $params = $this->checkParams($request, array(
-            'title', 'description', 'start_date', 'categories', 'type', 'lat', 'lon'),
-            array('duration', 'image64', 'image_name'));
+            'title', 'description', 'start_date', 'categories', 'type', 'lat', 'lon', 'end_date'),
+            array('image64', 'image_name'));
+
+        $files = $this->checkFiles($request, array(), array('image'));
 
         $act = new Activity();
         $act->setTitle($params['title']);
@@ -45,13 +47,22 @@ class ActivityController extends Neo4jController {
         $act->setStartDate(intval($params['start_date']));
         $act->setLatitude(doubleval($params['lat']));
         $act->setLongitude(doubleval($params['lon']));
+        $act->setEndDate(intval($params['end_date']));
         $act->setApplication($app);
 
-        if (array_key_exists('duration', $params)) {
-            $act->setDuration(intval($params['duration']));
-        }
-
         $this->saveInNeo($act);
+
+        if (array_key_exists('image', $files)) {
+            $fileData = $this->saveFile($files['image']);
+            $act->setImage($fileData['url']);
+        } else if (array_key_exists('image64', $params)) {
+            if (array_key_exists('image_name', $params)) {
+                $fileData = $this->saveFile64($params['image_name'], $params['image64']);
+                $act->setImage($fileData['url']);
+            } else {
+                throw new HttpException(400, "Param 'image_name' not provided");
+            }
+        }
 
         return $this->rest($act->getExtendView());
     }

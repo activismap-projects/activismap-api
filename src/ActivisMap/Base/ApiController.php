@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use HireVoice\Neo4j\EntityManager;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -138,13 +139,13 @@ class ApiController extends FOSRestController{
     }
 
     /**
-     * @param $tempFile
-     * @param $filename
+     * @param UploadedFile $tempFile
      * @return array
      */
-    public function saveFile($tempFile, $filename) {
+    public function saveFile($tempFile) {
         $filepath = $this->get('kernel')->getRootDir() . "/../web/files/";
 
+        $filename = $tempFile->getClientOriginalName();
         if ($filename != '') {
             $ext = substr($filename, strpos($filename, '.'), strlen($filename));
             $filename = uniqid() . $ext;
@@ -153,14 +154,15 @@ class ApiController extends FOSRestController{
             $content = fread($f, filesize($tempFile));
             $fs = new Filesystem();
             $fs->dumpFile($filepath . $filename, $content);
-            fclose($tempFile);
+            fclose($f);
 
-            $baseUrl = "http://" . $_SERVER['HTTP_HOST'];
+            $baseUrl = "https://" . $_SERVER['HTTP_HOST'];
 
             $data = array();
             $data['local_path'] = $filepath . $filename;
             $data['url'] = $baseUrl . '/files/' . $filename;
             $data['size'] = filesize($filepath . $filename);
+            $data['mimeType'] = $tempFile->getClientMimeType();
             return $data;
         }
 
@@ -181,12 +183,14 @@ class ApiController extends FOSRestController{
             $fs = new Filesystem();
             $fs->dumpFile($filepath . $filename, base64_decode($file));
 
-            $baseUrl = "http://" . $_SERVER['HTTP_HOST'];
+            $baseUrl = "https://" . $_SERVER['HTTP_HOST'];
 
             $data = array();
             $data['local_path'] = $filepath . $filename;
             $data['url'] = $baseUrl . '/files/' . $filename;
             $data['size'] = filesize($filepath . $filename);
+            $data['mimeType'] = mime_content_type($filepath.$filename);
+
             return $data;
         }
 

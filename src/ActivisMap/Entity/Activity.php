@@ -41,7 +41,7 @@ class Activity extends BaseEntity {
      * @var integer
      * @OGM\Property(format="integer")
      */
-    protected $duration;
+    protected $end_date;
 
     /**
      * @OGM\ManyToOne(relation="CREATED_BY")
@@ -172,17 +172,17 @@ class Activity extends BaseEntity {
     /**
      * @return int
      */
-    public function getDuration()
+    public function getEndDate()
     {
-        return $this->duration;
+        return $this->end_date;
     }
 
     /**
-     * @param int $duration
+     * @param int $end_date
      */
-    public function setDuration($duration)
+    public function setEndDate($end_date)
     {
-        $this->duration = $duration;
+        $this->end_date = $end_date;
     }
 
     /**
@@ -415,7 +415,7 @@ class Activity extends BaseEntity {
             'latitude' => $this->getLatitude(),
             'longitude' => $this->getLongitude(),
             'startDate' => $this->getStartDate(),
-            'duration' => $this->getDuration(),
+            'duration' => $this->getEndDate(),
             'categories' => $this->getCategories(),
             'type' => $this->getType(),
             'participants' => $this->getParticipants(),

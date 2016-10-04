@@ -415,7 +415,7 @@ class Activity extends BaseEntity {
             'latitude' => $this->getLatitude(),
             'longitude' => $this->getLongitude(),
             'startDate' => $this->getStartDate(),
-            'duration' => $this->getEndDate(),
+            'endDate' => $this->getEndDate(),
             'categories' => $this->getCategories(),
             'type' => $this->getType(),
             'participants' => $this->getParticipants(),

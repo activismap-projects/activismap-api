@@ -12,6 +12,7 @@ use ActivisMap\Entity\Activity;
 use ActivisMap\Entity\Alert;
 use ActivisMap\Entity\Application;
 use ActivisMap\Entity\NeoUser;
+use ActivisMap\Util\EntityUtils;
 use HireVoice\Neo4j\EntityManager;
 
 class NeoQuery {
@@ -71,6 +72,41 @@ class NeoQuery {
             foreach ($acts as $a) {
                 /** @var Alert $a */
                 $views[] = $a->getBaseView();
+            }
+
+            return $views;
+        }
+
+        return $acts;
+    }
+
+    /**
+     * @param string|null $type
+     * @param string $category
+     * @param bool|true $asView
+     * @return array
+     * @internal param array|null $categories
+     */
+    public function searchActivities($type = 'ALL', $category = 'ALL', $asView = true) {
+        if ($type != null && $type != 'ALL') {
+            $acts = $this->em->createCypherQuery()
+                ->match('(a:Activity)')
+                ->where('a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
+                ->end('a')
+                ->getList()->toArray();
+        } else {
+            $acts = $this->em->createCypherQuery()
+                ->match('(a:Activity)')
+                ->where('a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000))
+                ->end('a')
+                ->getList()->toArray();
+        }
+
+        if ($asView) {
+            $views = array();
+            foreach ($acts as $a) {
+                /** @var Activity $a */
+                $views[] = $a->getExtendView();
             }
 
             return $views;

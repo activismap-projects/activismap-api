@@ -118,7 +118,7 @@ class Activity extends BaseEntity {
     public function __construct() {
         parent::__construct('Act');
         $this->managers = new ArrayCollection();
-        $this->status = 'UNVERIFIED';
+        $this->status = 'WORKING';
     }
 
     /**

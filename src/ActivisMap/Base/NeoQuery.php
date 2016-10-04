@@ -85,19 +85,21 @@ class NeoQuery {
      * @param string $category
      * @param bool|true $asView
      * @return array
-     * @internal param array|null $categories
      */
     public function searchActivities($type = 'ALL', $category = 'ALL', $asView = true) {
+        $type = strtoupper($type);
+        $category = strtoupper($category);
+
         if ($type != null && $type != 'ALL') {
             $acts = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
+                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
                 ->end('a')
                 ->getList()->toArray();
         } else {
             $acts = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000))
+                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000))
                 ->end('a')
                 ->getList()->toArray();
         }

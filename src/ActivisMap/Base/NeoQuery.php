@@ -91,18 +91,23 @@ class NeoQuery {
         $category = strtoupper($category);
 
         if ($type != null && $type != 'ALL') {
-            $acts = $this->em->createCypherQuery()
+            $query = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
-                ->end('a')
+                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.end_date >= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
+                ->end('a');
+            $acts = $query
                 ->getList()->toArray();
         } else {
-            $acts = $this->em->createCypherQuery()
+            $query = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.start_date >= ' . (EntityUtils::millis() + 2592000000))
-                ->end('a')
+                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.end_date <= ' . (EntityUtils::millis() + 2592000000))
+                ->end('a');
+            $acts = $query
                 ->getList()->toArray();
         }
+
+        //die(print_r($query->getQuery(), true));
+
 
         if ($asView) {
             $views = array();

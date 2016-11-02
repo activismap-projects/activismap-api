@@ -14,7 +14,7 @@ use HireVoice\Neo4j\Extension\ArrayCollection;
 
 /**
  * Class Application
- * @package AppBundle\Entity
+ * @package ActivisMap\Entity
  * @OGM\Entity(labels="Application")
  */
 class Application extends BaseEntity {
@@ -58,7 +58,6 @@ class Application extends BaseEntity {
             'name' => $this->getName()
         );
     }
-
 
     public function prepare()
     {

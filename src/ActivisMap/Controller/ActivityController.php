@@ -31,6 +31,7 @@ class ActivityController extends Neo4jController {
     public function createActivity(Request $request) {
         $app = $this->getApplication($this->getParameter('application_id'));
         $user = $this->getNeoUser();
+        //die(print_r('caca', true));
 
         $params = $this->checkParams($request, array(
             'title', 'description', 'start_date', 'categories', 'type', 'lat', 'lon', 'end_date'),
@@ -51,6 +52,7 @@ class ActivityController extends Neo4jController {
         $act->setApplication($app);
 
         $this->saveInNeo($act);
+
 
         if (array_key_exists('image', $files)) {
             $fileData = $this->saveFile($files['image']);

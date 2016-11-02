@@ -46,13 +46,10 @@ class ActivityController extends Neo4jController {
         $act->setType($params['type']);
         $act->setCreator($user);
         $act->setStartDate(intval($params['start_date']));
-        $act->setLatitude(doubleval($params['lat']));
-        $act->setLongitude(doubleval($params['lon']));
+        $act->setLatitude(floatval($params['lat']));
+        $act->setLongitude(floatval($params['lon']));
         $act->setEndDate(intval($params['end_date']));
         $act->setApplication($app);
-
-        $this->saveInNeo($act);
-
 
         if (array_key_exists('image', $files)) {
             $fileData = $this->saveFile($files['image']);
@@ -65,6 +62,8 @@ class ActivityController extends Neo4jController {
                 throw new HttpException(400, "Param 'image_name' not provided");
             }
         }
+
+        $this->saveInNeo($act);
 
         return $this->rest($act->getExtendView());
     }

@@ -46,9 +46,7 @@ class PublicController extends Neo4jController {
      */
     public function register(Request $request) {
         $appId = $this->getParameter('application_id');
-        //die(print_r($appId, true));
         $app = $this->getApplication($appId);
-        //die(print_r('caca1', true));
 
         $params = $this->checkParams($request, array('password', 'repassword', 'username', 'email'),
             array('person_name', 'avatar'));
@@ -78,10 +76,8 @@ class PublicController extends Neo4jController {
         $user->setPersonName($personName);
         $user->setEnabled(true);
         $user->setNeoId(-1);
-        //die(print_r('caca2', true));
 
         $neoUser = $this->saveUser($user, $app);
-        die(print_r('caca3', true));
 
         $userView = $neoUser->getExtendView();
 

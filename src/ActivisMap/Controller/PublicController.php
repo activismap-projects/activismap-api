@@ -48,7 +48,7 @@ class PublicController extends Neo4jController {
         $appId = $this->getParameter('application_id');
         //die(print_r($appId, true));
         $app = $this->getApplication($appId);
-        die(print_r('caca1', true));
+        //die(print_r('caca1', true));
 
         $params = $this->checkParams($request, array('password', 'repassword', 'username', 'email'),
             array('person_name', 'avatar'));

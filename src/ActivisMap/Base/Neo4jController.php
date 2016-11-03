@@ -289,7 +289,6 @@ class Neo4jController extends ApiController {
     public function saveInNeo(BaseEntity $entity) {
         $entity->setLastUpdate();
         $neoM = $this->getNeoManager();
-        die(print_r('caca', true));
         $neoM->persist($entity);
         die(print_r('caca1', true));
         $neoM->flush();

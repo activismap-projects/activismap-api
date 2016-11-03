@@ -123,8 +123,9 @@ class Neo4jController extends ApiController {
         }
 
         $neoUser->setApplication($app);
-        die(print_r($neoUser->getBaseView(), true));
+
         $this->saveInNeo($neoUser);
+        die(print_r('caca', true));
         $entity->setNeoId($neoUser->getId());
         $this->save($entity);
 

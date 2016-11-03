@@ -290,7 +290,6 @@ class Neo4jController extends ApiController {
         $entity->setLastUpdate();
         $neoM = $this->getNeoManager();
         $neoM->persist($entity);
-        die(print_r('caca1', true));
         $neoM->flush();
         die(print_r('caca2', true));
     }

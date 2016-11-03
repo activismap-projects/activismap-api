@@ -78,7 +78,7 @@ class PublicController extends Neo4jController {
         $user->setPersonName($personName);
         $user->setEnabled(true);
         $user->setNeoId(-1);
-        die(print_r('caca2', true));
+        //die(print_r('caca2', true));
 
         $neoUser = $this->saveUser($user, $app);
         die(print_r('caca3', true));

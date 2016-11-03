@@ -125,7 +125,6 @@ class Neo4jController extends ApiController {
         $neoUser->setApplication($app);
 
         $this->saveInNeo($neoUser);
-        die(print_r('caca', true));
         $entity->setNeoId($neoUser->getId());
         $this->save($entity);
 
@@ -290,8 +289,11 @@ class Neo4jController extends ApiController {
     public function saveInNeo(BaseEntity $entity) {
         $entity->setLastUpdate();
         $neoM = $this->getNeoManager();
+        die(print_r('caca', true));
         $neoM->persist($entity);
+        die(print_r('caca1', true));
         $neoM->flush();
+        die(print_r('caca2', true));
     }
 
     public function deleteEntity($entity) {

@@ -39,6 +39,7 @@ abstract class BaseEntity {
      * @param string $prefix
      */
     public function __construct($prefix) {
+        $this->neoId = null;
         $this->created = EntityUtils::millis();
         $this->identifier = uniqid($prefix);
     }

@@ -291,7 +291,6 @@ class Neo4jController extends ApiController {
         $neoM = $this->getNeoManager();
         $neoM->persist($entity);
         $neoM->flush();
-        die(print_r('caca2', true));
     }
 
     public function deleteEntity($entity) {

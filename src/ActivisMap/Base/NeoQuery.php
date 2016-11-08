@@ -93,7 +93,7 @@ class NeoQuery {
         if ($type != null && $type != 'ALL') {
             $query = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.end_date >= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
+                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.end_date <= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
                 ->end('a');
             $acts = $query
                 ->getList()->toArray();

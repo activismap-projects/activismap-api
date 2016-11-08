@@ -131,7 +131,7 @@ class ApiController extends FOSRestController{
 
         foreach ($optional_files as $op) {
             if ($request->files->has($op) && !empty($request->files->get($op))) {
-                $req_files[$op] = $request->request->get($op);
+                $req_files[$op] = $request->files->get($op);
             }
         }
 

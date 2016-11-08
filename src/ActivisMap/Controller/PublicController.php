@@ -86,14 +86,26 @@ class PublicController extends Neo4jController {
     }
 
     /**
-     * @Route("/search/{type}/{category}")
+     * @Route("/search")
      * @Method("GET")
      * @param Request $request
-     * @param $type
-     * @param $category
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function searchActivities(Request $request, $type, $category) {
+    public function searchActivities(Request $request) {
+
+        $params = $this->checkParams($request, array(), array('type', 'category', 'limit', 'offset'));
+
+        if (array_key_exists('type', $params)) {
+            $type = strtoupper($params['type']);
+        } else {
+            $type = 'ALL';
+        }
+
+        if (array_key_exists('category', $params)) {
+            $category = strtoupper($params['category']);
+        } else {
+            $category = 'ALL';
+        }
         $acts = $this->getNeoQuery()->searchActivities($type, $category);
 
         return $this->rest($acts);

@@ -95,18 +95,39 @@ class ApiController extends FOSRestController{
      */
     protected function checkParams(Request $request, array $params, $optional_params = array()) {
         $req_params = array();
+
         foreach ($params as $param) {
-            //die(print_r($request->request->get($param), true));
-            if(!$request->request->has($param) || empty($request->request->get($param))) {
-                throw new HttpException(400, "Param '" . $param . "' is required.");
+            if ($request->request->has($param)) {
+                $val = $request->request->get($param);
+                if ($val != '') {
+                    $req_params[$param] = $val;
+                } else {
+                    throw new HttpException(400, "Param '" . $param . "' is required.");
+                }
+            } else if ($request->query->has($param)) {
+                $val = $request->query->get($param);
+                if ($val != '') {
+                    $req_params[$param] = $val;
+                } else {
+                    throw new HttpException(400, "Param '" . $param . "' is required.");
+                }
             } else {
-                $req_params[$param] = $request->request->get($param);
+                throw new HttpException(400, "Param '" . $param . "' is required.");
             }
         }
 
         foreach ($optional_params as $op) {
-            if ($request->request->has($op) && !empty($request->request->get($op))) {
-                $req_params[$op] = $request->request->get($op);
+            if ($request->request->has($op)) {
+                $val =  $request->request->get($op);
+                if ($val != '') {
+                    $req_params[$op] = $val;
+                }
+
+            } else if ($request->query->has($op)) {
+                $val =  $request->query->get($op);
+                if ($val != '') {
+                    $req_params[$op] = $val;
+                }
             }
         }
 

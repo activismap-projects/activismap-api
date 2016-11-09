@@ -113,8 +113,13 @@ class NeoQuery {
                 ->getList()->toArray();
         }
 
-        //die(print_r($query->getQuery(), true));
+        $class = get_class($query);
+        $rClass = new \ReflectionClass($class);
+        $prop = $rClass->getProperty('query');
+        $prop->setAccessible(true);
 
+        $queryString  = $prop->getValue($query);
+        $this->logger->error('SEARCH QUERY: ' . $queryString);
 
         if ($asView) {
             $views = array();

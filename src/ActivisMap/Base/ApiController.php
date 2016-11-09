@@ -8,6 +8,7 @@ use Doctrine\DBAL\DBALException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use HireVoice\Neo4j\EntityManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,6 +61,13 @@ class ApiController extends FOSRestController{
         }
 
         return false;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function getLogger() {
+        return $this->get('logger');
     }
 
     /**

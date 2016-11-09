@@ -14,6 +14,7 @@ use ActivisMap\Entity\Application;
 use ActivisMap\Entity\NeoUser;
 use ActivisMap\Util\EntityUtils;
 use HireVoice\Neo4j\EntityManager;
+use Psr\Log\LoggerInterface;
 
 class NeoQuery {
 
@@ -22,8 +23,14 @@ class NeoQuery {
      */
     private $em;
 
-    public function __construct(EntityManager $em) {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(EntityManager $em, LoggerInterface $logger) {
         $this->em = $em;
+        $this->logger = $logger;
     }
 
     /**

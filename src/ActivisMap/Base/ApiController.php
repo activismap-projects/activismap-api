@@ -244,7 +244,7 @@ class ApiController extends FOSRestController{
      * @return NeoQuery
      */
     public function getNeoQuery() {
-        return new NeoQuery($this->getNeoManager());
+        return new NeoQuery($this->getNeoManager(), $this->getLogger());
     }
 
     /**

@@ -105,7 +105,7 @@ class PublicController extends Neo4jController {
         $endDate = 0;
         $startDate = 0;
         $limit = 20;
-        $offset = 0;
+        $offset = 1;
 
         if (array_key_exists('end_date', $params)) {
             $endDate = intval($params['end_date']);

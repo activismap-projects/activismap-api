@@ -70,7 +70,7 @@ class ActivityController extends Neo4jController {
 
     /**
      * @Route("/{actId}")
-     * @Method("PUT")
+     * @Method("POST")
      * @param Request $request
      * @param $actId
      * @return \Symfony\Component\HttpFoundation\Response

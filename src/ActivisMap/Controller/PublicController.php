@@ -110,4 +110,41 @@ class PublicController extends Neo4jController {
 
         return $this->rest($acts);
     }
+
+    /**
+     * @Route("/activity/{actId}")
+     * @Method("GET")
+     * @param Request $request
+     * @param $actId
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function activityAction(Request $request, $actId) {
+        $params = $this->checkParams($request, array('action'));
+        $activity = $this->getActivity($actId);
+
+        $action = strtoupper($params['action']);
+
+        switch ($action) {
+            case 'LIKE':
+                $activity->like();
+                break;
+            case 'DISLIKE':
+                $activity->dislike();
+                break;
+            case 'NEUTRAL':
+                $activity->removeLike();
+                $activity->removeDislike();
+                break;
+            case 'SUBSCRIBE':
+                $activity->incrementParticipants();
+                break;
+            case 'UNSUBSCRIBE':
+                $activity->decrementParticipants();
+                break;
+        }
+
+        $this->saveInNeo($activity);
+
+        return $this->rest($activity->getExtendView());
+    }
 }

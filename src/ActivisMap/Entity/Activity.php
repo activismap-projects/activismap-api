@@ -87,19 +87,19 @@ class Activity extends BaseEntity {
 
     /**
      * @OGM\Property(format="integer")
-     * @var string
+     * @var integer
      */
     protected $participants;
 
     /**
      * @OGM\Property(format="integer")
-     * @var string
+     * @var integer
      */
     protected $likes;
 
     /**
      * @OGM\Property(format="integer")
-     * @var string
+     * @var integer
      */
     protected $dislikes;
 
@@ -298,7 +298,7 @@ class Activity extends BaseEntity {
     }
 
     /**
-     * @return string
+     * @return integer
      */
     public function getParticipants()
     {
@@ -306,15 +306,25 @@ class Activity extends BaseEntity {
     }
 
     /**
-     * @param string $participants
+     * @param integer $participants
      */
     public function setParticipants($participants)
     {
         $this->participants = $participants;
     }
 
+    public function incrementParticipants() {
+        $this->participants++;
+    }
+
+    public function decrementParticipants() {
+        if ($this->participants > 1) {
+            $this->participants--;
+        }
+    }
+
     /**
-     * @return string
+     * @return integer
      */
     public function getLikes()
     {
@@ -322,15 +332,25 @@ class Activity extends BaseEntity {
     }
 
     /**
-     * @param string $likes
+     * @param integer $likes
      */
     public function setLikes($likes)
     {
         $this->likes = $likes;
     }
 
+    public function like() {
+        $this->likes++;
+    }
+
+    public function removeLike() {
+        if ($this->likes > 1) {
+            $this->likes--;
+        }
+    }
+
     /**
-     * @return string
+     * @return integer
      */
     public function getDislikes()
     {
@@ -338,11 +358,21 @@ class Activity extends BaseEntity {
     }
 
     /**
-     * @param string $dislikes
+     * @param integer $dislikes
      */
     public function setDislikes($dislikes)
     {
         $this->dislikes = $dislikes;
+    }
+
+    public function dislike() {
+        $this->dislikes++;
+    }
+
+    public function removeDislike() {
+        if ($this->dislikes > 1) {
+            $this->dislikes--;
+        }
     }
 
     /**

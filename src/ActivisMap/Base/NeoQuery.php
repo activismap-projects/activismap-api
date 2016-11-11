@@ -12,6 +12,7 @@ use ActivisMap\Entity\Activity;
 use ActivisMap\Entity\Alert;
 use ActivisMap\Entity\Application;
 use ActivisMap\Entity\NeoUser;
+use ActivisMap\Util\Area;
 use ActivisMap\Util\EntityUtils;
 use HireVoice\Neo4j\EntityManager;
 use Psr\Log\LoggerInterface;
@@ -60,6 +61,12 @@ class NeoQuery {
         return $acts;
     }
 
+    public function getActivity($id, $asView =false) {
+        $acts = $this->em->createCypherQuery()
+            ->match('(a:Application)')
+            ->where('ID(a) = ' . $id);
+    }
+
     /**
      * @param Activity $act
      * @param string $status
@@ -89,26 +96,49 @@ class NeoQuery {
 
     /**
      * @param string|null $type
-     * @param string $category
+     * @param int $startDate
+     * @param int $endDate
+     * @param int $limit
+     * @param int $offset
+     * @param Area $area
      * @param bool|true $asView
      * @return array
      */
-    public function searchActivities($type = 'ALL', $category = 'ALL', $asView = true) {
+    public function searchActivities($type = 'ALL', $startDate = 0, $endDate = 0, $limit = 20, $offset = 1, $area = null, $asView = true) {
         $type = strtoupper($type);
-        $category = strtoupper($category);
+
+        if ($startDate > 0) {
+            $start = 'AND a.start_date >= ' . $startDate;
+        } else {
+            $start = 'AND a.start_date >= ' . EntityUtils::millis();
+        }
+
+        if ($endDate > 0) {
+            $end = 'AND a.end_date <= ' . $endDate;
+        } else {
+            $end = 'AND a.end_date <= ' . (EntityUtils::millis() + 2592000000);
+        }
+
+        $areaQuery = '';
+        if ($area != null) {
+            $areaQuery = ' AND a.latitude <= ' . $area->getLat1() . ' AND a.latitude >=' . $area->getLat2() .
+                ' AND a.longitude <= ' . $area->getLng1() . ' AND a.longitude >= ' . $area->getLng2();
+        }
 
         if ($type != null && $type != 'ALL') {
             $query = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.end_date <= ' . (EntityUtils::millis() + 2592000000) . ' AND a.type = "' . $type . '"')
-                ->end('a');
+                ->where('a.status = "WORKING" ' . $start . ' ' . $end . ' AND a.type = "' . $type . '" ' . $areaQuery )
+                ->end('a')
+                ->skip('' . (($limit * $offset) - $limit));
             $acts = $query
                 ->getList()->toArray();
         } else {
             $query = $this->em->createCypherQuery()
                 ->match('(a:Activity)')
-                ->where('a.status = "WORKING" AND a.start_date >= ' . EntityUtils::millis() . ' AND a.end_date <= ' . (EntityUtils::millis() + 2592000000))
-                ->end('a');
+                ->where('a.status = "WORKING" ' . $start . ' ' . $end . ' ' .  $areaQuery )
+                ->end('a')
+                ->skip('' . (($limit * $offset) - $limit));
             $acts = $query
                 ->getList()->toArray();
         }

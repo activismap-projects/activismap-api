@@ -12,6 +12,7 @@ use ActivisMap\Base\Neo4jController;
 use ActivisMap\Base\NeoQuery;
 use ActivisMap\Entity\Application;
 use ActivisMap\Entity\User;
+use ActivisMap\Util\Area;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -93,7 +94,7 @@ class PublicController extends Neo4jController {
      */
     public function searchActivities(Request $request) {
 
-        $params = $this->checkParams($request, array(), array('type', 'category', 'limit', 'offset'));
+        $params = $this->checkParams($request, array(), array('type', 'start_date', 'end_date', 'limit', 'offset', 'area'));
 
         if (array_key_exists('type', $params)) {
             $type = strtoupper($params['type']);
@@ -101,12 +102,52 @@ class PublicController extends Neo4jController {
             $type = 'ALL';
         }
 
-        if (array_key_exists('category', $params)) {
-            $category = strtoupper($params['category']);
-        } else {
-            $category = 'ALL';
+        $endDate = 0;
+        $startDate = 0;
+        $limit = 20;
+        $offset = 0;
+
+        if (array_key_exists('end_date', $params)) {
+            $endDate = intval($params['end_date']);
         }
-        $acts = $this->getNeoQuery()->searchActivities($type, $category);
+
+        if (array_key_exists('start_date', $params)) {
+            $endDate = intval($params['start_date']);
+        }
+
+        if (array_key_exists('limit', $params)) {
+            $limit = intval($params['limit']);
+        }
+
+        if (array_key_exists('offset', $params)) {
+            $offset = intval($params['offset']);
+        }
+
+        if (array_key_exists('area', $params)) {
+            $area = $params['area'];
+
+            if (!strrpos($area, '@') !== true) {
+                $point1 = explode('@', $area)[0];
+                $point2 = explode('@', $area)[1];
+
+                if (strrpos($point1, ',') !== true && strrpos($point1, ',') !== true) {
+                    $lat1 = floatval(explode(',', $point1)[0]);
+                    $lng1 = floatval(explode(',', $point1)[1]);
+                    $lat2 = floatval(explode(',', $point2)[0]);
+                    $lng2 = floatval(explode(',', $point2)[1]);
+
+                    $a = new Area($lat1, $lng1, $lat2, $lng2);
+                    $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset, $a);
+                } else {
+                    $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset);
+                }
+            } else {
+                $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset);
+            }
+        } else {
+            $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset);
+        }
+
 
         return $this->rest($acts);
     }

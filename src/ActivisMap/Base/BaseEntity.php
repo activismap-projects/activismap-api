@@ -33,7 +33,7 @@ abstract class BaseEntity {
 
     /**
      * @var integer
-     * @ORM\Column(type=="integer")
+     * @ORM\Column(type="integer")
      */
     protected $created;
 

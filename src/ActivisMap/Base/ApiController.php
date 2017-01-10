@@ -2,12 +2,16 @@
 
 namespace ActivisMap\Base;
 
+use ActivisMap\Entity\Alert;
+use ActivisMap\Entity\Event;
 use ActivisMap\Entity\User;
 use ActivisMap\Util\GCMSender;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use HireVoice\Neo4j\EntityManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,6 +20,27 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 class ApiController extends FOSRestController{
+
+    /**
+     * @return EntityRepository
+     */
+    public function getUserRepository() {
+        return $this->getManager()->getRepository('ActivisMap:User');
+    }
+
+    /**
+     * @return EntityRepository
+     */
+    public function getEventRepository() {
+        return $this->getManager()->getRepository('ActivisMap:Event');
+    }
+
+    /**
+     * @return EntityRepository
+     */
+    public function getAlertRepository() {
+        return $this->getManager()->getRepository('ActivisMap:Alert');
+    }
 
     public function rest($data = null, $status = "ok", $message = "Request success", $httpCode = 200){
         $response = new ApiResponse(
@@ -89,13 +114,6 @@ class ApiController extends FOSRestController{
     }
 
     /**
-     * @return User
-     */
-    protected function getUser() {
-        return $this->container->get("security.token_storage")->getToken()->getUser();
-    }
-
-    /**
      * @param Request $request
      * @param array $params
      * @param array $optional_params
@@ -103,39 +121,24 @@ class ApiController extends FOSRestController{
      */
     protected function checkParams(Request $request, array $params, $optional_params = array()) {
         $req_params = array();
-
         foreach ($params as $param) {
-            if ($request->request->has($param)) {
-                $val = $request->request->get($param);
-                if ($val != '') {
-                    $req_params[$param] = $val;
-                } else {
-                    throw new HttpException(400, "Param '" . $param . "' is required.");
-                }
-            } else if ($request->query->has($param)) {
-                $val = $request->query->get($param);
-                if ($val != '') {
-                    $req_params[$param] = $val;
-                } else {
-                    throw new HttpException(400, "Param '" . $param . "' is required.");
-                }
+            //die(print_r($request->request->get($param), true));
+            if(!$request->request->has($param) && !$request->query->has($param)) {
+                throw new HttpException(400, "Param '" . $param . "' not found");
             } else {
-                throw new HttpException(400, "Param '" . $param . "' is required.");
+                if ($request->query->has($param)) {
+                    $req_params[$param] = $request->query->get($param);
+                } else {
+                    $req_params[$param] = $request->request->get($param);
+                }
             }
         }
 
         foreach ($optional_params as $op) {
-            if ($request->request->has($op)) {
-                $val =  $request->request->get($op);
-                if ($val != '') {
-                    $req_params[$op] = $val;
-                }
-
-            } else if ($request->query->has($op)) {
-                $val =  $request->query->get($op);
-                if ($val != '') {
-                    $req_params[$op] = $val;
-                }
+            if ($request->query->has($op)) {
+                $req_params[$op] = $request->query->get($op);
+            } else if ($request->request->has($op)) {
+                $req_params[$op] = $request->request->get($op);
             }
         }
 
@@ -145,26 +148,27 @@ class ApiController extends FOSRestController{
     /**
      * @param Request $request
      * @param array $params
-     * @param array $optional_files
+     * @param array $opt_files
      * @return array
+     * @internal param array $optional_files
      */
-    protected function checkFiles(Request $request, array $params, $optional_files = array()) {
-        $req_files = array();
+    protected function checkFiles(Request $request, array $params, $opt_files = array()) {
+        $req_params = array();
         foreach ($params as $param) {
             if(!$request->files->has($param)) {
-                throw new HttpException(400, "File param '" . $param . "' not provided.");
+                throw new HttpException(400, "File '" . $param . "' not provided");
             } else {
-                $req_files[$param] = $request->files->get($param);
+                $req_params[$param] = $request->files->get($param);
             }
         }
 
-        foreach ($optional_files as $op) {
-            if ($request->files->has($op) && !empty($request->files->get($op))) {
-                $req_files[$op] = $request->files->get($op);
+        foreach ($opt_files as $op) {
+            if ($request->files->has($op)) {
+                $req_params[$op] = $request->files->get($op);
             }
         }
 
-        return $req_files;
+        return $req_params;
     }
 
     /**
@@ -227,10 +231,73 @@ class ApiController extends FOSRestController{
     }
 
     /**
-     * @return \Doctrine\Common\Persistence\ObjectManager
+     * @return EntityManager
      */
     public function getManager() {
         return $this->getDoctrine()->getManager();
+    }
+
+    /**
+     * @param ObjectRepository $repository
+     * @param $id
+     * @return object
+     */
+    public function getEntity($repository, $id) {
+        return $repository->find($id);
+    }
+
+    /**
+     * @param null $id
+     * @param bool $checkNull
+     * @return User
+     */
+    protected function getUser($id = null, $checkNull = true) {
+
+        if ($id != null) {
+            $user = $this->getUserRepository()
+                ->find($id);
+        } else {
+            $user = $this->container->get("security.token_storage")->getToken()->getUser();
+        }
+
+        if ($user == null && $checkNull) {
+            throw new HttpException(404, 'User not found');
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param $id
+     * @param bool $checkNull
+     * @return Event
+     */
+    public function getEvent($id, $checkNull = true) {
+        /** @var Event $object */
+        $object = $this->getEntity($this->getEventRepository(), $id);
+        if ($checkNull) {
+            $this->checkNull($object, 'Activity not found.');
+        }
+
+        return $object;
+
+    }
+
+    /**
+     * @param $id
+     * @param bool|true $checkNull
+     * @return Alert
+     */
+    public function getAlert($id, $checkNull = true) {
+        /** @var Alert $object */
+        $object = $this->getEntity($this->getAlertRepository(), $id);
+        if ($checkNull) {
+            $this->checkNull($object, 'Alert not found.');
+        }
+
+        $object->prepare();
+        return $object;
+
     }
 
     /**
@@ -241,10 +308,10 @@ class ApiController extends FOSRestController{
     }
 
     /**
-     * @return NeoQuery
+     * @return QueryHelper
      */
-    public function getNeoQuery() {
-        return new NeoQuery($this->getNeoManager(), $this->getLogger());
+    public function getQueryHelper() {
+        return new QueryHelper($this, $this->getLogger());
     }
 
     /**

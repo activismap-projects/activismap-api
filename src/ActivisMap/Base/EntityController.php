@@ -5,10 +5,9 @@ namespace ActivisMap\Base;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-abstract class EntityController extends Neo4jController implements CRUDInterface {
+abstract class EntityController extends ApiController {
 
     protected abstract function getRepositoryName();
-    protected abstract function getNewEntity();
 
     protected function getRepository(){
         return $this->getDoctrine()
@@ -55,29 +54,6 @@ abstract class EntityController extends Neo4jController implements CRUDInterface
         return $this->rest($entities, "success", "Request successful");
     }
 
-    public function createEntity(Request $request){
-        $entity = $this->getNewEntity();
-
-        $params = $request->request->all();
-
-        foreach ($params as $name => $value) {
-            if ($name != 'id') {
-                $setter = $this->attributeToSetter($name);
-                if (method_exists($entity, $setter)) {
-                    call_user_func_array(array($entity, $setter), array($value));
-                }
-            }
-        }
-
-        return $entity;
-    }
-
-    public function createAction(Request $request){
-        $entity = $this->createEntity($request);
-        $this->save($entity);
-        return $this->rest($entity);
-    }
-
     public function updateAction(Request $request, $id){
 
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
@@ -121,5 +97,10 @@ abstract class EntityController extends Neo4jController implements CRUDInterface
         $em->flush();
 
         return $this->rest(null, "success", "Deleted successfully");
+    }
+
+    protected function attributeToSetter($str) {
+        $func = create_function('$c', 'return strtoupper($c[1]);');
+        return preg_replace_callback('/_([a-z])/', $func, "set_".$str);
     }
 }

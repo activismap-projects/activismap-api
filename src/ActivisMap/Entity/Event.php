@@ -9,111 +9,115 @@
 namespace ActivisMap\Entity;
 
 use ActivisMap\Base\BaseEntity;
-use HireVoice\Neo4j\Annotation as OGM;
-use HireVoice\Neo4j\Extension\ArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class Activity
  * @package ActivisMap\Entity
- * @OGM\Entity(labels="Activity")
+ * @ORM\Entity
+ * @ORM\Table(name="event")
  */
-class Activity extends BaseEntity {
+class Event extends BaseEntity {
 
     /**
-     * @OGM\Property(format="double")
+     * @ORM\Table(type="float")
      * @var float
      */
     protected $latitude;
 
     /**
-     * @OGM\Property(format="double")
+     * @ORM\Table(type="float")
      * @var float
      */
     protected $longitude;
 
     /**
      * @var integer
-     * @OGM\Property(format="integer")
+     * @ORM\Table(type="integer")
      */
-    protected $start_date;
+    protected $startDate;
 
     /**
      * @var integer
-     * @OGM\Property(format="integer")
+     * @ORM\Table(type="integer")
      */
-    protected $end_date;
+    protected $endDate;
 
     /**
-     * @OGM\ManyToOne(relation="CREATED_BY")
-     * @var NeoUser
+     * @ORM\ManyToOne(targetEntity="ActivisMap\Entity\User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @var User
      */
     protected $creator;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\ManyToOne(targetEntity="ActivisMap\Entity\Company")
+     * @ORM\JoinColumn(name="company_id", referencedColumnName="id")
+     * @var Company
+     */
+    protected $company;
+
+    /**
+     * @ORM\Table(type="string")
      * @var string
      */
     protected $status;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\Table(type="string")
      * @var string
      */
     protected $categories;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\Table(type="string")
      * @var string
      */
     protected $type;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\Table(type="string")
      * @var string
      */
     protected $title;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\Table(type="string")
      * @var string
      */
     protected $description;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\Table(type="string")
      * @var string
      */
     protected $image;
 
     /**
-     * @OGM\Property(format="integer")
+     * @ORM\Table(type="integer")
      * @var integer
      */
     protected $participants;
 
-    /**
-     * @OGM\Property(format="integer")
+    /**ñ
+     * @ORM\Table(type="integer")
      * @var integer
      */
     protected $likes;
 
     /**
-     * @OGM\Property(format="integer")
+     * @ORM\Table(type="integer")
      * @var integer
      */
     protected $dislikes;
 
     /**
-     * @OGM\ManyToMany(relation="MANAGED_BY")
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="managed_events")
+     * @ORM\JoinTable(name="managers_events")
      * @var ArrayCollection
      */
     protected $managers;
-
-    /**
-     * @OGM\ManyToOne(relation="CREATED_IN")
-     * @var Application
-     */
-    protected $application;
 
     public function __construct() {
         parent::__construct('Act');
@@ -158,15 +162,15 @@ class Activity extends BaseEntity {
      */
     public function getStartDate()
     {
-        return $this->start_date;
+        return $this->startDate;
     }
 
     /**
-     * @param int $start_date
+     * @param int $startDate
      */
-    public function setStartDate($start_date)
+    public function setStartDate($startDate)
     {
-        $this->start_date = $start_date;
+        $this->startDate = $startDate;
     }
 
     /**
@@ -174,19 +178,19 @@ class Activity extends BaseEntity {
      */
     public function getEndDate()
     {
-        return $this->end_date;
+        return $this->endDate;
     }
 
     /**
-     * @param int $end_date
+     * @param int $endDate
      */
-    public function setEndDate($end_date)
+    public function setEndDate($endDate)
     {
-        $this->end_date = $end_date;
+        $this->endDate = $endDate;
     }
 
     /**
-     * @return NeoUser
+     * @return User
      */
     public function getCreator()
     {
@@ -194,11 +198,27 @@ class Activity extends BaseEntity {
     }
 
     /**
-     * @param NeoUser $creator
+     * @param User $creator
      */
     public function setCreator($creator)
     {
         $this->creator = $creator;
+    }
+
+    /**
+     * @return Company
+     */
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param Company $company
+     */
+    public function setCompany($company)
+    {
+        $this->company = $company;
     }
 
     /**
@@ -392,40 +412,24 @@ class Activity extends BaseEntity {
     }
 
     /**
-     * @param NeoUser $user
+     * @param User $user
      */
-    public function addManager(NeoUser $user) {
+    public function addManager(User $user) {
         $this->managers->add($user);
     }
 
     /**
-     * @param NeoUser $user
+     * @param User $user
      */
-    public function removeManager(NeoUser $user) {
+    public function removeManager(User $user) {
         $this->managers->removeElement($user);
     }
 
     /**
-     * @return Application
-     */
-    public function getApplication()
-    {
-        return $this->application;
-    }
-
-    /**
-     * @param Application $application
-     */
-    public function setApplication($application)
-    {
-        $this->application = $application;
-    }
-
-    /**
-     * @param NeoUser $user
+     * @param User $user
      * @return bool
      */
-    public function isManager(NeoUser $user) {
+    public function isManager(User $user) {
         return $this->managers->contains($user);
     }
 
@@ -436,7 +440,7 @@ class Activity extends BaseEntity {
         $view = array(
             'id' => $this->getId(),
             'created' => $this->getCreated(),
-            'updated' => $this->getLastUpdate(),
+            'last_update' => $this->getLastUpdate(),
             'identifier' => $this->getIdentifier(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
@@ -444,19 +448,20 @@ class Activity extends BaseEntity {
             'status' => $this->getStatus(),
             'latitude' => $this->getLatitude(),
             'longitude' => $this->getLongitude(),
-            'startDate' => $this->getStartDate(),
-            'endDate' => $this->getEndDate(),
+            'start_date' => $this->getStartDate(),
+            'end_date' => $this->getEndDate(),
             'categories' => $this->getCategories(),
             'type' => $this->getType(),
             'participants' => $this->getParticipants(),
             'likes' => $this->getLikes(),
             'dislikes' => $this->getDislikes(),
             'creator' => $this->getCreator()->getBaseView(),
+            'company' => $this->getCompany()->getBaseView()
         );
 
         $mans = $this->getManagers();
         $mViews = array();
-        /** @var NeoUser $m */
+        /** @var User $m */
         foreach($mans as $m) {
             $mViews[] = $m->getBaseView();
         }
@@ -471,11 +476,6 @@ class Activity extends BaseEntity {
      */
     public function getExtendView() {
         $view = $this->getBaseView();
-        $view['application'] = $this->getApplication()->getBaseView();
         return $view;
-    }
-
-    public function prepare() {
-        $this->callGetters();
     }
 }

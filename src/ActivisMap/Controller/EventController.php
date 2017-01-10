@@ -8,8 +8,8 @@
 
 namespace ActivisMap\Controller;
 
-use ActivisMap\Base\Neo4jController;
-use ActivisMap\Entity\Activity;
+use ActivisMap\Base\EntityController;
+use ActivisMap\Entity\Event;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @package ActivisMap\Controller
  * @Route("/api/v1/activity")
  */
-class ActivityController extends Neo4jController {
+class EventController extends EntityController {
 
     /**
      * @Route("")
@@ -28,10 +28,8 @@ class ActivityController extends Neo4jController {
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function createActivity(Request $request) {
-        $app = $this->getApplication($this->getParameter('application_id'));
-        $user = $this->getNeoUser();
-        //die(print_r('caca', true));
+    public function createEvent(Request $request) {
+        $user = $this->getUser();
 
         $params = $this->checkParams($request, array(
             'title', 'description', 'start_date', 'categories', 'type', 'lat', 'lon', 'end_date'),
@@ -39,7 +37,7 @@ class ActivityController extends Neo4jController {
 
         $files = $this->checkFiles($request, array(), array('image'));
 
-        $act = new Activity();
+        $act = new Event();
         $act->setTitle($params['title']);
         $act->setDescription($params['description']);
         $act->setCategories($params['categories']);
@@ -49,7 +47,6 @@ class ActivityController extends Neo4jController {
         $act->setLatitude(floatval($params['lat']));
         $act->setLongitude(floatval($params['lon']));
         $act->setEndDate(intval($params['end_date']));
-        $act->setApplication($app);
 
         if (array_key_exists('image', $files)) {
             $fileData = $this->saveFile($files['image']);
@@ -63,7 +60,7 @@ class ActivityController extends Neo4jController {
             }
         }
 
-        $this->saveInNeo($act);
+        $this->save($act);
 
         return $this->rest($act->getExtendView());
     }
@@ -76,15 +73,15 @@ class ActivityController extends Neo4jController {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function updateActivity(Request $request, $actId) {
-        $act = $this->getActivity($actId);
-        $user = $this->getNeoUser();
+        $act = $this->getEvent($actId);
+        $user = $this->getUser();
 
         if (!$act->isManager($user)) {
             throw new HttpException(401, 'You do not have necessary permissions');
         }
 
-        /** @var Activity $act */
-        $act = parent::update($request, $this->getActivityRepository(), $actId);
+        /** @var Event $act */
+        $act = parent::updateAction($request, $actId);
         return $this->rest($act->getExtendView());
     }
 
@@ -95,12 +92,22 @@ class ActivityController extends Neo4jController {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getManagedActivities(Request $request) {
-        $user = $this->getNeoUser();
+        $user = $this->getUser();
 
-        $acts = $this->getNeoQuery()->getActivityByUser($user, 'UNVERIFIED', true);
-        $acts = array_merge($acts, $this->getNeoQuery()->getActivityByUser($user, 'ENABLED', true));
-        $acts = array_merge($acts, $this->getNeoQuery()->getActivityByUser($user, 'DISABLED', true));
+        $acts = $user->getManagedEvents()->toArray();
+
+        $actsView = array();
+
+        /** @var Event $e */
+        foreach ($acts as $e) {
+            $actsView[] = $e->getBaseView();
+        }
 
         return $this->rest($acts);
+    }
+
+    protected function getRepositoryName()
+    {
+        return 'ActivisMap:Event';
     }
 }

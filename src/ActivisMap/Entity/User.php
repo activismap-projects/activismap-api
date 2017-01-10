@@ -3,7 +3,8 @@
 
 namespace ActivisMap\Entity;
 
-use FOS\UserBundle\Model\User as BaseUser;
+use ActivisMap\Base\BaseUser;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,87 +14,127 @@ use Doctrine\ORM\Mapping as ORM;
 class User extends BaseUser {
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\Company", inversedBy="users")
+     * @ORM\JoinTable(name="users_companies")
+     * @var ArrayCollection
      */
-    protected $id;
+    protected $companies;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
-     * @var string
+     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\Event", mappedBy="managers")
+     * @var ArrayCollection
      */
-    protected $personName;
+    protected $managed_events;
 
     /**
-     * @ORM\Column(type="integer", nullable=false, unique=true)
+     * @ORM\OneToMany(targetEntity="ActivisMap\Entity\Event", mappedBy="creator")
+     * @var ArrayCollection
      */
-    protected $neoId;
+    protected $created_events;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
-        // your own logic
+        $this->managed_events = new ArrayCollection();
+        $this->created_events = new ArrayCollection();
     }
 
     /**
-     * @return string
+     * @return ArrayCollection
      */
-    public function getPersonName()
+    public function getCompanies()
     {
-        return $this->personName;
+        return $this->companies;
     }
 
     /**
-     * @param string $personName
+     * @param ArrayCollection $companies
      */
-    public function setPersonName($personName)
+    public function setCompanies($companies)
     {
-        $this->personName = $personName;
+        $this->companies = $companies;
     }
 
     /**
-     * @return mixed
+     * @param Company $company
      */
-    public function getNeoId()
+    public function addCompany(Company $company) {
+        $this->companies->add($company);
+    }
+
+    /**
+     * @param Company $company
+     */
+    public function removeCompany(Company $company) {
+        $this->companies->remove($company);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getManagedEvents()
     {
-        return $this->neoId;
+        return $this->managed_events;
     }
 
     /**
-     * @param int $neoId
+     * @param ArrayCollection $managed_events
      */
-    public function setNeoId($neoId)
+    public function setManagedEvents($managed_events)
     {
-        $this->neoId = $neoId;
+        $this->managed_events = $managed_events;
     }
 
     /**
-     * @param NeoUser $neoUser
-     * @return NeoUser
+     * @return ArrayCollection
      */
-    public function toNeoUser(NeoUser $neoUser = null) {
+    public function getCreatedEvents()
+    {
+        return $this->created_events;
+    }
 
-        if ($neoUser == null) {
-            $neoUser = new NeoUser();
+    /**
+     * @return array
+     */
+    public function getBaseView() {
+        return array(
+            'id' => $this->getId(),
+            'identifier' => $this->getIdentifier(),
+            'created' => $this->getCreated(),
+            'last_update' => $this->getLastUpdate(),
+            'last_login' => $this->getLastLogin()->getTimestamp()*1000,
+            'email' => $this->getEmail(),
+            'username' => $this->getUsername(),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtendView() {
+        $view = $this->getBaseView();
+
+        $managedEvents = array();
+
+        $me = $this->getManagedEvents();
+
+        /** @var Event $e */
+        foreach ($me as $e) {
+            $managedEvents[] = $e->getBaseView();
         }
 
-        $password = $this->getPlainPassword();
-        $salt = $this->getSalt();
-        $salted = $password.'{'.$salt.'}';
-        $digest = hash('sha512', $salted, true);
+        $companiesView = array();
 
-        for ($i=1; $i<5000; $i++) {
-            $digest = hash('sha512', $digest.$salted, true);
+        $companies = $this->getCompanies();
+
+        /** @var Company $c */
+        foreach ($companies as $c) {
+            $companiesView[] = $c->getBaseView();
         }
 
-        $encodedPassword = base_convert($digest, 16, 32);
+        $view['managed_events'] = $managedEvents;
+        $view['companies'] = $companiesView;
 
-        $neoUser->setPassword($encodedPassword);
-        $neoUser->setSalt($this->getSalt());
-        $neoUser->setUsername($this->getUsername());
-        $neoUser->setPersonName($this->getPersonName());
-        $neoUser->setEmail($this->getEmail());
-        return $neoUser;
+        return $view;
     }
+
 }

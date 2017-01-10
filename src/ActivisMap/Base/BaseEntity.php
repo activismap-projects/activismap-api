@@ -8,38 +8,51 @@
 
 namespace ActivisMap\Base;
 use ActivisMap\Util\EntityUtils;
-use HireVoice\Neo4j\Annotation as OGM;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class BaseEntity
+ * @package ActivisMap\Base
+ * @ORM\HasLifecycleCallbacks
+ */
 abstract class BaseEntity {
+
     /**
-     * @OGM\Auto
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @var integer
      */
-    protected $neoId;
+    protected $id;
 
     /**
-     * @OGM\Property(format="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $identifier;
 
     /**
      * @var integer
-     * @OGM\Property(format="integer")
+     * @ORM\Column(type=="integer")
      */
     protected $created;
 
     /**
      * @var integer
-     * @OGM\Property(format="integer")
+     * @ORM\Column(type="integer")
      */
-    protected $last_update;
+    protected $lastUpdate;
+
+    /**
+     * @Orm\Column(type="boolean")
+     * @var bool
+     */
+    protected $enabled;
 
     /**
      * @param string $prefix
      */
     public function __construct($prefix) {
-        $this->neoId = null;
         $this->created = EntityUtils::millis();
         $this->identifier = uniqid($prefix);
     }
@@ -56,15 +69,18 @@ abstract class BaseEntity {
      * @return int
      */
     public function getLastUpdate() {
-        if ($this->last_update == null || $this->last_update == 0) {
+        if ($this->lastUpdate == null || $this->lastUpdate == 0) {
             return $this->getCreated();
         }
-        return $this->last_update;
+        return $this->lastUpdate;
     }
 
+    /**
+     * @ORM\PrePersist
+     */
     public function setLastUpdate()
     {
-        $this->last_update = EntityUtils::millis();
+        $this->lastUpdate = EntityUtils::millis();
     }
 
     /**
@@ -76,25 +92,19 @@ abstract class BaseEntity {
     }
 
     /**
-     * @return array
+     * @return boolean
      */
-    public function callGetters() {
-        $getters = array();
-        $methods = get_class_methods($this);
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
 
-        foreach ($methods as $m) {
-           if (strpos($m, 'get') === 0 && $m != 'getEntity') {
-               $getters[] = $m;
-           }
-        }
-
-        //die(print_r($getters, true));
-
-        foreach ($getters as $get) {
-            call_user_func_array(array($this, $get), array());
-        }
-
-        return $getters;
+    /**
+     * @param boolean $enabled
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
     }
 
     /**
@@ -102,8 +112,6 @@ abstract class BaseEntity {
      */
     public function getId()
     {
-        return $this->neoId;
+        return $this->id;
     }
-
-    public abstract function prepare();
 }

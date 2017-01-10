@@ -9,7 +9,7 @@
 namespace ActivisMap\Controller;
 
 
-use ActivisMap\Base\Neo4jController;
+use ActivisMap\Base\EntityController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class UserController
  * @package ActivisMap\Controller
- * @Route("/api/v1/user")
+ * @Route("/v1/user")
  */
-class UserController extends Neo4jController {
+class UserController extends EntityController {
 
     /**
      * @Route("")
@@ -28,9 +28,9 @@ class UserController extends Neo4jController {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function self(Request $request) {
-        $user = $this->getNeoUser(null, true);
+        $user = $this->getUser();
 
-        return $this->rest($user->getExtendView());
+        return $this->rest($user->getBaseView());
     }
 
     /**
@@ -40,9 +40,9 @@ class UserController extends Neo4jController {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function updateSelf(Request $request) {
-        $user = $this->getNeoUser(null, true);
+        $user = $this->getUser();
 
-        return $this->rest($user->getExtendView());
+        return $this->rest($user->getBaseView());
     }
 
     /**
@@ -53,8 +53,13 @@ class UserController extends Neo4jController {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getAccount(Request $request, $usrId) {
-        $user = $this->getNeoUser($usrId, true);
+        $user = $this->getUser($usrId);
 
         return $this->rest($user->getBaseView());
+    }
+
+    protected function getRepositoryName()
+    {
+        return 'ActivisMap:User';
     }
 }

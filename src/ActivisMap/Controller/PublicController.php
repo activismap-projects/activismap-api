@@ -8,56 +8,33 @@
 
 namespace ActivisMap\Controller;
 
-use ActivisMap\Base\Neo4jController;
-use ActivisMap\Base\NeoQuery;
-use ActivisMap\Entity\Application;
+use ActivisMap\Base\ApiController;
 use ActivisMap\Entity\User;
 use ActivisMap\Util\Area;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Class PublicController
  * @package ActivisMap\Controller
  * @Route("/api/v1/public")
  */
-class PublicController extends Neo4jController {
+class PublicController extends ApiController {
 
     /**
-     * @ApiDoc(
-     *      section="Público",
-     *      description="Registro de usuario",
-     *      parameters = {
-     *          {"name"="password", "dataType"="string", "required"=true, "format"="UTF-8", "description"="Contraseña para la cuenta"},
-     *          {"name"="repassword", "dataType"="string", "required"=true, "format"="UTF-8", "description"="Comprobación de contraseña"},
-     *          {"name"="username", "dataType"="string", "required"=false, "format"="UTF-8", "description"="Nombre de usuario para hacer login. Si no se especifica se usará uno generado"},
-     *          {"name"="person_name", "dataType"="string", "required"=false, "format"="UTF-8", "description"="Nombre personal del usuario. Si no se especifica se usará el username"},
-     *          {"name"="email", "dataType"="string", "required"=false, "format"="UTF-8", "description"="Nombre personal del usuario. Si no se especifica se usará el username"},
-     *          {"name"="avatar", "dataType"="string", "required"=false, "format"="UTF-8", "description"="Nombre personal del usuario. Si no se especifica se usará el username"},
-     *      },
-     *      output = "AppBundle\Entity\NeoUser"
-     * )
      * @Route("/app/register")
      * @Method("POST")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function register(Request $request) {
-        $appId = $this->getParameter('application_id');
-        $app = $this->getApplication($appId);
 
-        $params = $this->checkParams($request, array('password', 'repassword', 'username', 'email'),
+        $params = $this->checkParams($request, array('password', 'username', 'email'),
             array('person_name', 'avatar'));
 
         $password = $params['password'];
-        $repassword = $params['repassword'];
-
-        if ($password != $repassword) {
-            throw new HttpException(400, 'Password and repassword must match.');
-        }
 
         $username = $params['username'];
         $personName = array_key_exists('person_name', $params) ? $params['person_name'] : $username;
@@ -76,11 +53,10 @@ class PublicController extends Neo4jController {
         $user->setEmail($params['email']);
         $user->setPersonName($personName);
         $user->setEnabled(true);
-        $user->setNeoId(-1);
 
-        $neoUser = $this->saveUser($user, $app);
+        $this->save($user);
 
-        $userView = $neoUser->getExtendView();
+        $userView = $user->getExtendView();
 
         return $this->rest($userView);
 
@@ -137,15 +113,15 @@ class PublicController extends Neo4jController {
                     $lng2 = floatval(explode(',', $point2)[1]);
 
                     $a = new Area($lat1, $lng1, $lat2, $lng2);
-                    $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset, $a);
+                    $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset, $a);
                 } else {
-                    $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset);
+                    $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset);
                 }
             } else {
-                $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset);
+                $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset);
             }
         } else {
-            $acts = $this->getNeoQuery()->searchActivities($type, $startDate, $endDate, $limit, $offset);
+            $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset);
         }
 
 
@@ -161,31 +137,31 @@ class PublicController extends Neo4jController {
      */
     public function activityAction(Request $request, $actId) {
         $params = $this->checkParams($request, array('action'));
-        $activity = $this->getActivity($actId);
+        $event = $this->getEvent($actId);
 
         $action = strtoupper($params['action']);
 
         switch ($action) {
             case 'LIKE':
-                $activity->like();
+                $event->like();
                 break;
             case 'DISLIKE':
-                $activity->dislike();
+                $event->dislike();
                 break;
             case 'NEUTRAL':
-                $activity->removeLike();
-                $activity->removeDislike();
+                $event->removeLike();
+                $event->removeDislike();
                 break;
             case 'SUBSCRIBE':
-                $activity->incrementParticipants();
+                $event->incrementParticipants();
                 break;
             case 'UNSUBSCRIBE':
-                $activity->decrementParticipants();
+                $event->decrementParticipants();
                 break;
         }
 
-        $this->saveInNeo($activity);
+        $this->save($event);
 
-        return $this->rest($activity->getExtendView());
+        return $this->rest($event->getExtendView());
     }
 }

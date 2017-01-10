@@ -113,7 +113,7 @@ class Event extends BaseEntity {
     protected $dislikes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="managed_events")
+     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\User", inversedBy="managed_events")
      * @ORM\JoinTable(name="managers_events")
      * @var ArrayCollection
      */

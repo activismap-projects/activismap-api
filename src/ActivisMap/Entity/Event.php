@@ -21,26 +21,26 @@ use Doctrine\ORM\Mapping as ORM;
 class Event extends BaseEntity {
 
     /**
-     * @ORM\Table(type="float")
+     * @ORM\Column(type="float")
      * @var float
      */
     protected $latitude;
 
     /**
-     * @ORM\Table(type="float")
+     * @ORM\Column(type="float")
      * @var float
      */
     protected $longitude;
 
     /**
      * @var integer
-     * @ORM\Table(type="integer")
+     * @ORM\Column(type="integer")
      */
     protected $startDate;
 
     /**
      * @var integer
-     * @ORM\Table(type="integer")
+     * @ORM\Column(type="integer")
      */
     protected $endDate;
 
@@ -59,55 +59,55 @@ class Event extends BaseEntity {
     protected $company;
 
     /**
-     * @ORM\Table(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $status;
 
     /**
-     * @ORM\Table(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $categories;
 
     /**
-     * @ORM\Table(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $type;
 
     /**
-     * @ORM\Table(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $title;
 
     /**
-     * @ORM\Table(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $description;
 
     /**
-     * @ORM\Table(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $image;
 
     /**
-     * @ORM\Table(type="integer")
+     * @ORM\Column(type="integer")
      * @var integer
      */
     protected $participants;
 
     /**ñ
-     * @ORM\Table(type="integer")
+     * @ORM\Column(type="integer")
      * @var integer
      */
     protected $likes;
 
     /**
-     * @ORM\Table(type="integer")
+     * @ORM\Column(type="integer")
      * @var integer
      */
     protected $dislikes;

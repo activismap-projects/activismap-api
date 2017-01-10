@@ -28,13 +28,13 @@ class Company extends BaseGroup {
     protected $email;
 
     /**
-     * @ManyToMany(targetEntity="ActivisMap\Entity\User", mappedBy="companies")
+     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\User", mappedBy="companies")
      * @var ArrayCollection
      */
     protected $users;
 
     /**
-     * @OneToMany(targetEntity="ActivisMap\Entity\Event", mappedBy="company")
+     * @ORM\OneToMany(targetEntity="ActivisMap\Entity\Event", mappedBy="company")
      * @var ArrayCollection
      */
     protected $events;

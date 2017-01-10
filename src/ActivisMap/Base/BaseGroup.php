@@ -7,8 +7,10 @@
  */
 
 namespace ActivisMap\Base;
+
 use ActivisMap\Util\EntityUtils;
 use FOS\UserBundle\Model\Group as DOCGroup;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class BaseGroup

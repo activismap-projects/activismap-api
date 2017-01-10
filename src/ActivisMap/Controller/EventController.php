@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
  * Class ActivityController
  * @package ActivisMap\Controller
- * @Route("/api/v1/activity")
+ * @Route("/v1/activity")
  */
 class EventController extends EntityController {
 

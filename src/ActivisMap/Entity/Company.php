@@ -13,6 +13,12 @@ use ActivisMap\Base\BaseGroup;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class Company
+ * @package ActivisMap\Entity
+ * @ORM\Entity
+ * @ORM\Table("company")
+ */
 class Company extends BaseGroup {
 
     /**

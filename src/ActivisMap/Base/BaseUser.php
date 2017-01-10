@@ -53,7 +53,7 @@ class BaseUser extends DOCUser {
     public function __construct() {
         parent::__construct();
         $this->created = EntityUtils::millis();
-        $this->identifier = uniqid("", true);
+        $this->identifier = uniqid("U");
     }
 
     /**
@@ -93,6 +93,9 @@ class BaseUser extends DOCUser {
      */
     public function getLastUpdate()
     {
+        if ($this->lastUpdate == null || $this->lastUpdate == 0) {
+            return $this->getCreated();
+        }
         return $this->lastUpdate;
     }
 
@@ -102,10 +105,7 @@ class BaseUser extends DOCUser {
      */
     public function setLastUpdate()
     {
-        if ($this->lastUpdate == null || $this->lastUpdate == 0) {
-            return $this->getCreated();
-        }
-        return $this->lastUpdate;
+        $this->lastUpdate = EntityUtils::millis();
     }
 
     /**

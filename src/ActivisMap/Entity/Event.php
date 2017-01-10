@@ -120,7 +120,7 @@ class Event extends BaseEntity {
     protected $managers;
 
     public function __construct() {
-        parent::__construct('Act');
+        parent::__construct('E');
         $this->managers = new ArrayCollection();
         $this->status = 'WORKING';
     }

@@ -51,7 +51,7 @@ class BaseGroup extends DOCGroup {
     public function __construct($name, $roles = array()) {
         parent::__construct($name, $roles);
         $this->created = EntityUtils::millis();
-        $this->identifier = uniqid("", true);
+        $this->identifier = uniqid("C", true);
     }
 
     /**

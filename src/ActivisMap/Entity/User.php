@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="fos_user")
  */
 class User extends BaseUser {
@@ -36,6 +37,7 @@ class User extends BaseUser {
         parent::__construct();
         $this->managed_events = new ArrayCollection();
         $this->created_events = new ArrayCollection();
+        $this->companies = new ArrayCollection();
     }
 
     /**
@@ -93,6 +95,19 @@ class User extends BaseUser {
     }
 
     /**
+     * @return int
+     */
+    public function getLastLogin() {
+        $date = parent::getLastLogin();
+
+        if ($date != null) {
+            return $date->getTimestamp() * 1000;
+        }
+
+        return 0;
+    }
+
+    /**
      * @return array
      */
     public function getBaseView() {
@@ -101,16 +116,24 @@ class User extends BaseUser {
             'identifier' => $this->getIdentifier(),
             'created' => $this->getCreated(),
             'last_update' => $this->getLastUpdate(),
-            'last_login' => $this->getLastLogin()->getTimestamp()*1000,
+            'last_login' => $this->getLastLogin(),
             'email' => $this->getEmail(),
             'username' => $this->getUsername(),
         );
     }
 
     /**
+     * @ORM\PrePersist
+     */
+    public function setLastUpdate() {
+        parent::setLastUpdate();
+    }
+
+    /**
      * @return array
      */
-    public function getExtendView() {
+    public function getExtendView()
+    {
         $view = $this->getBaseView();
 
         $managedEvents = array();

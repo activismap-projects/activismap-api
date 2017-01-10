@@ -19,12 +19,12 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
  * Class PublicController
  * @package ActivisMap\Controller
- * @Route("/api/v1/public")
+ * @Route("/v1/public")
  */
 class PublicController extends ApiController {
 
     /**
-     * @Route("/app/register")
+     * @Route("/register")
      * @Method("POST")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response

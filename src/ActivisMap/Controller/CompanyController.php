@@ -61,7 +61,7 @@ class CompanyController extends EntityController {
 
         $this->save($role);
 
-        return $this->rest($company->getExtendView());
+        return $this->rest($role->getUserView());
     }
 
     /**

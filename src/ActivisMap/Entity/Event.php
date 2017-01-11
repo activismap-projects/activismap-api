@@ -9,6 +9,7 @@
 namespace ActivisMap\Entity;
 
 use ActivisMap\Base\BaseEntity;
+use ActivisMap\Util\Roles;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -430,6 +431,17 @@ class Event extends BaseEntity {
      * @return bool
      */
     public function isManager(User $user) {
+        if ($user->getId() == $this->getCreator()->getId()) {
+            return true;
+        }
+
+        $company = $this->getCompany();
+        $userRoles = $company->getUserRoles($user);
+
+        if (!$userRoles->isGrantedFor(Roles::ROLE_ADMIN)) {
+            return false;
+        }
+
         return $this->managers->contains($user);
     }
 

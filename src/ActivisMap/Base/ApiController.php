@@ -272,10 +272,10 @@ class ApiController extends FOSRestController{
         if ($id != null) {
             $object = $this->getUserRepository()
                 ->createQueryBuilder('u')
-                ->where('id = :user_id')
-                ->orWhere('username = :user_id')
-                ->orWhere('email = :user_id')
-                ->orWhere('identifier = :user_id')
+                ->where('u.id = :user_id')
+                ->orWhere('u.username = :user_id')
+                ->orWhere('u.email = :user_id')
+                ->orWhere('u.identifier = :user_id')
                 ->setParameter('user_id', $id)
                 ->getQuery()->getResult();
 
@@ -302,30 +302,52 @@ class ApiController extends FOSRestController{
      * @return Event
      */
     public function getEvent($id, $checkNull = true) {
-        /** @var Event $object */
-        $object = $this->getEntity($this->getEventRepository(), $id);
-        if ($checkNull) {
-            $this->checkNull($object, 'Activity not found.');
+
+        $object = $this->getEventRepository()
+            ->createQueryBuilder('u')
+            ->where('u.id = :event_id')
+            ->orWhere('u.identifier = :event_id')
+            ->setParameter('event_id', $id)
+            ->getQuery()->getResult();
+
+        if (count($object) <= 0) {
+            $event = null;
+        } else {
+            $event = $object[0];
         }
 
-        return $object;
+        if ($checkNull) {
+            $this->checkNull($event, 'Event not found.');
+        }
+
+        return $event;
 
     }
 
     /**
-     * @param $identifier
+     * @param $id
      * @param bool|true $checkNull
      * @return Company
      */
-    public function getCompany($identifier, $checkNull = true) {
+    public function getCompany($id, $checkNull = true) {
         $object = $this->getCompanyRepository()
-            ->findBy(array('identifier' => $identifier));
+            ->createQueryBuilder('u')
+            ->where('u.id = :identifier')
+            ->orWhere('u.identifier = :identifier')
+            ->setParameter('event_id', $id)
+            ->getQuery()->getResult();
 
         if (count($object) <= 0) {
-            throw new HttpException(404, 'Company not found');
+            $company = null;
+        } else {
+            $company = $object[0];
         }
 
-        return $object[0];
+        if ($checkNull) {
+            $this->checkNull($company, 'Company not found.');
+        }
+
+        return $company;
     }
 
     /**
@@ -411,7 +433,7 @@ class ApiController extends FOSRestController{
      * @param bool|false $strict
      */
     public function setImage(Request $request, $paramName, $entity = null, $strict = false) {
-        $params = $this->checkParams($request, array(), array('file_name', $paramName . '64'));
+        $params = $this->checkParams($request, array(), array($paramName . '_name', $paramName . '64'));
         $files = $this->checkFiles($request, array(), array($paramName));
 
         if ($entity != null) {
@@ -423,14 +445,14 @@ class ApiController extends FOSRestController{
                     call_user_func(array($entity, $setter), $filesParams['url']);
                 }
             } else if (array_key_exists($paramName . '64', $params)) {
-                if (array_key_exists('file_name', $params)) {
-                    $filesParams = $this->saveFile64($params['file_name'], $params[$paramName . '64']);
+                if (array_key_exists($paramName . '_name', $params)) {
+                    $filesParams = $this->saveFile64($params[$paramName . '_name'], $params[$paramName . '64']);
                     $setter = $this->attributeToSetter($paramName);
                     if (method_exists($entity, $setter)) {
                         call_user_func(array($entity, $setter), $filesParams['url']);
                     }
                 } else {
-                    throw new HttpException(400, 'Param "file_name" is required if "' . $paramName . '64" is set');
+                    throw new HttpException(400, 'Param "'. $paramName . '_name" is required if "' . $paramName . '64" is set');
                 }
             } else if ($strict) {
                 throw new HttpException(400, 'Image no detected');
@@ -440,11 +462,11 @@ class ApiController extends FOSRestController{
                 $filesParams = $this->saveFile($files[$paramName]);
                 $request->request->set($paramName, $filesParams['url']);
             } else if (array_key_exists($paramName . '64', $params)) {
-                if (array_key_exists('file_name', $params)) {
-                    $filesParams = $this->saveFile64($params['file_name'], $params[$paramName . '64']);
+                if (array_key_exists($paramName . '_name', $params)) {
+                    $filesParams = $this->saveFile64($params[$paramName . '_name'], $params[$paramName . '64']);
                     $request->request->set($paramName, $filesParams['url']);
                 } else {
-                    throw new HttpException(400, 'Param "file_name" is required if "' . $paramName . '64" is set');
+                    throw new HttpException(400, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
                 }
             } else if ($strict) {
                 throw new HttpException(400, 'Image no detected');

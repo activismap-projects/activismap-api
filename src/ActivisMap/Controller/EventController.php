@@ -10,6 +10,8 @@ namespace ActivisMap\Controller;
 
 use ActivisMap\Base\EntityController;
 use ActivisMap\Entity\Event;
+use ActivisMap\Util\Roles;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,59 +32,91 @@ class EventController extends EntityController {
      */
     public function createEvent(Request $request) {
         $user = $this->getUser();
-
         $params = $this->checkParams($request, array(
-            'title', 'description', 'start_date', 'categories', 'type', 'lat', 'lon', 'end_date'),
-            array('image64', 'image_name'));
+            'title', 'description', 'start_date', 'categories', 'type', 'lat', 'lon', 'end_date', 'company_id'));
 
-        $files = $this->checkFiles($request, array(), array('image'));
+        $identifier = $params['company_id'];
+        $company = $this->getCompany($identifier);
 
-        $act = new Event();
-        $act->setTitle($params['title']);
-        $act->setDescription($params['description']);
-        $act->setCategories($params['categories']);
-        $act->setType($params['type']);
-        $act->setCreator($user);
-        $act->setStartDate(intval($params['start_date']));
-        $act->setLatitude(floatval($params['lat']));
-        $act->setLongitude(floatval($params['lon']));
-        $act->setEndDate(intval($params['end_date']));
-
-        if (array_key_exists('image', $files)) {
-            $fileData = $this->saveFile($files['image']);
-            $act->setImage($fileData['url']);
-        } else if (array_key_exists('image64', $params)) {
-            if (array_key_exists('image_name', $params)) {
-                $fileData = $this->saveFile64($params['image_name'], $params['image64']);
-                $act->setImage($fileData['url']);
-            } else {
-                throw new HttpException(400, "Param 'image_name' not provided");
-            }
-        }
-
-        $this->save($act);
-
-        return $this->rest($act->getExtendView());
-    }
-
-    /**
-     * @Route("/{actId}")
-     * @Method("POST")
-     * @param Request $request
-     * @param $actId
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function updateActivity(Request $request, $actId) {
-        $act = $this->getEvent($actId);
-        $user = $this->getUser();
-
-        if (!$act->isManager($user)) {
+        $userRoles = $company->getUserRoles($user);
+        if (!$userRoles->isGrantedFor(Roles::ROLE_SUPER_ADMIN)) {
             throw new HttpException(401, 'You do not have necessary permissions');
         }
 
-        /** @var Event $act */
-        $act = parent::updateAction($request, $actId);
-        return $this->rest($act->getExtendView());
+        $event = new Event();
+        $event->setTitle($params['title']);
+        $event->setDescription($params['description']);
+        $event->setCategories($params['categories']);
+        $event->setType($params['type']);
+        $event->setCreator($user);
+        $event->setStartDate(intval($params['start_date']));
+        $event->setLatitude(floatval($params['lat']));
+        $event->setLongitude(floatval($params['lon']));
+        $event->setEndDate(intval($params['end_date']));
+        $event->setCompany($company);
+
+        $this->setImage($request, 'image', $event);
+
+        $this->save($event);
+
+        return $this->rest($event->getExtendView());
+    }
+
+    /**
+     * @Route("/{identifier}")
+     * @Method("PUT")
+     * @param Request $request
+     * @param $identifier
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function updateEvent(Request $request, $identifier) {
+        $event = $this->getEvent($identifier);
+        $user = $this->getUser();
+
+        if (!$event->isManager($user)) {
+            throw new HttpException(401, 'You do not have necessary permissions');
+        }
+
+        $company = $event->getCompany();
+        $userRoles = $company->getUserRoles($user);
+
+        if ($userRoles->isGrantedFor(Roles::ROLE_PUBLISHER)) {
+            $request->request->remove('managers');
+        } else if ($request->request->has('managers')) {
+            $reqManagers = $request->request->get('managers');
+            $managers = new ArrayCollection();
+
+            foreach ($reqManagers as $m) {
+                $user = $this->getUser($m);
+                $managers->add($user);
+            }
+
+            $request->request->set('managers', $managers);
+        }
+
+        /** @var Event $event */
+        $event = parent::updateAction($request, $identifier);
+        return $this->rest($event->getExtendView());
+    }
+
+    /**
+     * @Route("/{identifier}")
+     * @Method("DELETE")
+     * @param Request $request
+     * @param $identifier
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteEvent(Request $request, $identifier) {
+        $user = $this->getUser();
+        $event = $this->getEvent($identifier);
+        $company = $event->getCompany();
+        $userRole = $company->getUserRoles($user);
+
+        if (!$userRole->isGrantedFor(Roles::ROLE_ADMIN)) {
+            throw new HttpException(401, 'You do not have necessary permissions.');
+        }
+
+        return $this->deleteAction($event->getId());
     }
 
     /**

@@ -55,6 +55,7 @@ abstract class BaseEntity {
     public function __construct($prefix) {
         $this->created = EntityUtils::millis();
         $this->identifier = uniqid($prefix);
+        $this->enabled = false;
     }
 
     /**

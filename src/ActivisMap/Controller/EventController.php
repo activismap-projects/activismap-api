@@ -119,27 +119,6 @@ class EventController extends EntityController {
         return $this->deleteAction($event->getId());
     }
 
-    /**
-     * @Route("/getManagedActivities")
-     * @Method("GET")
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getManagedActivities(Request $request) {
-        $user = $this->getUser();
-
-        $acts = $user->getManagedEvents()->toArray();
-
-        $actsView = array();
-
-        /** @var Event $e */
-        foreach ($acts as $e) {
-            $actsView[] = $e->getBaseView();
-        }
-
-        return $this->rest($acts);
-    }
-
     protected function getRepositoryName()
     {
         return 'ActivisMap:Event';

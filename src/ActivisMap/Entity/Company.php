@@ -28,7 +28,13 @@ class Company extends BaseGroup {
     protected $email;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\User", mappedBy="companies")
+     * @ORM\Column(type="string", nullable=true)
+     * @var string
+     */
+    protected $logo;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ActivisMap\Entity\UserCompany", mappedBy="company", cascade={"remove"})
      * @var ArrayCollection
      */
     protected $users;
@@ -38,12 +44,6 @@ class Company extends BaseGroup {
      * @var ArrayCollection
      */
     protected $events;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @var string
-     */
-    protected $logo;
 
     public function __construct($name) {
         parent::__construct($name);
@@ -57,6 +57,26 @@ class Company extends BaseGroup {
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * @param User $user
+     * @return UserCompany
+     */
+    public function getUserRoles(User $user ) {
+        $users = $this->getUsers();
+
+        /** @var UserCompany $u */
+        foreach ($users as $u) {
+            if ($u->getUser()->getId() == $user->getId()) {
+                return $u;
+            }
+        }
+
+        $role = new UserCompany();
+        $role->setUser($user);
+        $role->setCompany($this);
+        return $role;
     }
 
     /**
@@ -98,6 +118,8 @@ class Company extends BaseGroup {
         $this->logo = $logo;
     }
 
+
+
     /**
      * @return array
      */
@@ -123,9 +145,9 @@ class Company extends BaseGroup {
 
         $users = $this->getUsers();
 
-        /** @var User $u */
+        /** @var UserCompany $u */
         foreach ($users as $u) {
-            $usersView[] = $u->getBaseView();
+            $usersView[] = $u->getCompanyView();
         }
 
         $eventsView = array();
@@ -134,11 +156,11 @@ class Company extends BaseGroup {
 
         /** @var Event $e */
         foreach ($events as $e) {
-            $eventsView[] = $this->getBaseView();
+            $eventsView[] = $e->getBaseView();
         }
 
-        $view['users'] = $this->getUsers();
-        $view['events'] = $this->getEvents();
+        $view['users'] = $usersView;
+        $view['events'] = $eventsView;
 
         return $view;
     }

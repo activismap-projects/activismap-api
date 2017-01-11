@@ -54,6 +54,11 @@ abstract class EntityController extends ApiController {
         return $this->rest($entities, "success", "Request successful");
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return object
+     */
     public function updateAction(Request $request, $id){
 
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
@@ -72,23 +77,20 @@ abstract class EntityController extends ApiController {
                 if (method_exists($entity, $setter)) {
                     call_user_func(array($entity, $setter), $value);
                 }
-                else{
-                    throw new HttpException(400, "Bad request, parameter '$name' is not allowed");
-                }
             }
         }
 
         $this->save($entity);
 
-        return $this->rest(null, "success", "Updated successfully");
+        return $entity;
     }
 
-    public function deleteAction(Request $request, $id){
+    public function deleteAction($id){
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
 
         $repo = $this->getRepository();
 
-        $entity = $repo->findOneBy(array('id'=>$id));
+        $entity = $repo->find(array('id'=>$id));
 
         if(empty($entity)) throw new HttpException(404, "Not found");
 
@@ -97,10 +99,5 @@ abstract class EntityController extends ApiController {
         $em->flush();
 
         return $this->rest(null, "success", "Deleted successfully");
-    }
-
-    protected function attributeToSetter($str) {
-        $func = create_function('$c', 'return strtoupper($c[1]);');
-        return preg_replace_callback('/_([a-z])/', $func, "set_".$str);
     }
 }

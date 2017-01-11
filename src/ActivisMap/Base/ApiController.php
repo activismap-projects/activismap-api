@@ -3,6 +3,7 @@
 namespace ActivisMap\Base;
 
 use ActivisMap\Entity\Alert;
+use ActivisMap\Entity\Company;
 use ActivisMap\Entity\Event;
 use ActivisMap\Entity\User;
 use ActivisMap\Util\GCMSender;
@@ -38,8 +39,15 @@ class ApiController extends FOSRestController{
     /**
      * @return EntityRepository
      */
-    public function getAlertRepository() {
-        return $this->getManager()->getRepository('ActivisMap:Alert');
+    public function getCompanyRepository() {
+        return $this->getManager()->getRepository('ActivisMap:Company');
+    }
+
+    /**
+     * @return EntityRepository
+     */
+    public function getCompanyRolesRepository() {
+        return $this->getManager()->getRepository('ActivisMap:UserCompany');
     }
 
     public function rest($data = null, $status = "ok", $message = "Request success", $httpCode = 200){
@@ -63,6 +71,15 @@ class ApiController extends FOSRestController{
             }
             throw new HttpException(500, "Unknown error occurred when save " . $e->getMessage());
         }
+    }
+
+    /**
+     * @param $str
+     * @return mixed
+     */
+    protected function attributeToSetter($str) {
+        $func = create_function('$c', 'return strtoupper($c[1]);');
+        return preg_replace_callback('/_([a-z])/', $func, "set_".$str);
     }
 
     /**
@@ -150,7 +167,6 @@ class ApiController extends FOSRestController{
      * @param array $params
      * @param array $opt_files
      * @return array
-     * @internal param array $optional_files
      */
     protected function checkFiles(Request $request, array $params, $opt_files = array()) {
         $req_params = array();
@@ -254,8 +270,21 @@ class ApiController extends FOSRestController{
     protected function getUser($id = null, $checkNull = true) {
 
         if ($id != null) {
-            $user = $this->getUserRepository()
-                ->find($id);
+            $object = $this->getUserRepository()
+                ->createQueryBuilder('u')
+                ->where('id = :user_id')
+                ->orWhere('username = :user_id')
+                ->orWhere('email = :user_id')
+                ->orWhere('identifier = :user_id')
+                ->setParameter('user_id', $id)
+                ->getQuery()->getResult();
+
+            if (count($object) <= 0) {
+                $user = null;
+            } else {
+                $user = $object[0];
+            }
+
         } else {
             $user = $this->container->get("security.token_storage")->getToken()->getUser();
         }
@@ -284,20 +313,19 @@ class ApiController extends FOSRestController{
     }
 
     /**
-     * @param $id
+     * @param $identifier
      * @param bool|true $checkNull
-     * @return Alert
+     * @return Company
      */
-    public function getAlert($id, $checkNull = true) {
-        /** @var Alert $object */
-        $object = $this->getEntity($this->getAlertRepository(), $id);
-        if ($checkNull) {
-            $this->checkNull($object, 'Alert not found.');
+    public function getCompany($identifier, $checkNull = true) {
+        $object = $this->getCompanyRepository()
+            ->findBy(array('identifier' => $identifier));
+
+        if (count($object) <= 0) {
+            throw new HttpException(404, 'Company not found');
         }
 
-        $object->prepare();
-        return $object;
-
+        return $object[0];
     }
 
     /**
@@ -374,5 +402,54 @@ class ApiController extends FOSRestController{
         $email->setBody($template)
             ->setContentType($contentType);
         $this->getMailer()->send($email);
+    }
+
+    /**
+     * @param Request $request
+     * @param $paramName
+     * @param null $entity
+     * @param bool|false $strict
+     */
+    public function setImage(Request $request, $paramName, $entity = null, $strict = false) {
+        $params = $this->checkParams($request, array(), array('file_name', $paramName . '64'));
+        $files = $this->checkFiles($request, array(), array($paramName));
+
+        if ($entity != null) {
+            if (array_key_exists($paramName, $files)) {
+                $filesParams = $this->saveFile($files[$paramName]);
+
+                $setter = $this->attributeToSetter($paramName);
+                if (method_exists($entity, $setter)) {
+                    call_user_func(array($entity, $setter), $filesParams['url']);
+                }
+            } else if (array_key_exists($paramName . '64', $params)) {
+                if (array_key_exists('file_name', $params)) {
+                    $filesParams = $this->saveFile64($params['file_name'], $params[$paramName . '64']);
+                    $setter = $this->attributeToSetter($paramName);
+                    if (method_exists($entity, $setter)) {
+                        call_user_func(array($entity, $setter), $filesParams['url']);
+                    }
+                } else {
+                    throw new HttpException(400, 'Param "file_name" is required if "' . $paramName . '64" is set');
+                }
+            } else if ($strict) {
+                throw new HttpException(400, 'Image no detected');
+            }
+        } else {
+            if (array_key_exists($paramName, $files)) {
+                $filesParams = $this->saveFile($files[$paramName]);
+                $request->request->set($paramName, $filesParams['url']);
+            } else if (array_key_exists($paramName . '64', $params)) {
+                if (array_key_exists('file_name', $params)) {
+                    $filesParams = $this->saveFile64($params['file_name'], $params[$paramName . '64']);
+                    $request->request->set($paramName, $filesParams['url']);
+                } else {
+                    throw new HttpException(400, 'Param "file_name" is required if "' . $paramName . '64" is set');
+                }
+            } else if ($strict) {
+                throw new HttpException(400, 'Image no detected');
+            }
+        }
+
     }
 }

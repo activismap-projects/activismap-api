@@ -15,8 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class User extends BaseUser {
 
     /**
-     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\Company", inversedBy="users")
-     * @ORM\JoinTable(name="users_companies")
+     * @ORM\OneToMany(targetEntity="ActivisMap\Entity\UserCompany", mappedBy="user", cascade={"remove"})
      * @var ArrayCollection
      */
     protected $companies;

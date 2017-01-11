@@ -46,10 +46,9 @@ class BaseGroup extends DOCGroup {
 
     /**
      * @param string $name
-     * @param array $roles
      */
-    public function __construct($name, $roles = array()) {
-        parent::__construct($name, $roles);
+    public function __construct($name) {
+        parent::__construct($name);
         $this->created = EntityUtils::millis();
         $this->identifier = uniqid("C", true);
     }

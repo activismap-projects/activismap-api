@@ -113,16 +113,8 @@ class Event extends BaseEntity {
      */
     protected $dislikes;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\User", inversedBy="managed_events")
-     * @ORM\JoinTable(name="managers_events")
-     * @var ArrayCollection
-     */
-    protected $managers;
-
     public function __construct() {
         parent::__construct('E');
-        $this->managers = new ArrayCollection();
         $this->status = 'WORKING';
     }
 
@@ -397,36 +389,6 @@ class Event extends BaseEntity {
     }
 
     /**
-     * @return ArrayCollection
-     */
-    public function getManagers()
-    {
-        return $this->managers;
-    }
-
-    /**
-     * @param ArrayCollection $managers
-     */
-    public function setManagers($managers)
-    {
-        $this->managers = $managers;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function addManager(User $user) {
-        $this->managers->add($user);
-    }
-
-    /**
-     * @param User $user
-     */
-    public function removeManager(User $user) {
-        $this->managers->removeElement($user);
-    }
-
-    /**
      * @param User $user
      * @return bool
      */
@@ -438,11 +400,7 @@ class Event extends BaseEntity {
         $company = $this->getCompany();
         $userRoles = $company->getUserRoles($user);
 
-        if (!$userRoles->isGrantedFor(Roles::ROLE_ADMIN)) {
-            return false;
-        }
-
-        return $this->managers->contains($user);
+        return $userRoles->isGrantedFor(Roles::ROLE_PUBLISHER);
     }
 
     /**
@@ -470,15 +428,6 @@ class Event extends BaseEntity {
             'creator' => $this->getCreator()->getBaseView(),
             'company' => $this->getCompany()->getBaseView()
         );
-
-        $mans = $this->getManagers();
-        $mViews = array();
-        /** @var User $m */
-        foreach($mans as $m) {
-            $mViews[] = $m->getBaseView();
-        }
-
-        $view['managers'] = $mViews;
 
         return $view;
     }

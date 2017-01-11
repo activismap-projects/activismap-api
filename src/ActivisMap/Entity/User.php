@@ -21,12 +21,6 @@ class User extends BaseUser {
     protected $companies;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ActivisMap\Entity\Event", mappedBy="managers")
-     * @var ArrayCollection
-     */
-    protected $managed_events;
-
-    /**
      * @ORM\OneToMany(targetEntity="ActivisMap\Entity\Event", mappedBy="creator")
      * @var ArrayCollection
      */
@@ -34,7 +28,6 @@ class User extends BaseUser {
 
     public function __construct() {
         parent::__construct();
-        $this->managed_events = new ArrayCollection();
         $this->created_events = new ArrayCollection();
         $this->companies = new ArrayCollection();
     }
@@ -67,22 +60,6 @@ class User extends BaseUser {
      */
     public function removeCompany(Company $company) {
         $this->companies->remove($company);
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getManagedEvents()
-    {
-        return $this->managed_events;
-    }
-
-    /**
-     * @param ArrayCollection $managed_events
-     */
-    public function setManagedEvents($managed_events)
-    {
-        $this->managed_events = $managed_events;
     }
 
     /**
@@ -135,15 +112,6 @@ class User extends BaseUser {
     {
         $view = $this->getBaseView();
 
-        $managedEvents = array();
-
-        $me = $this->getManagedEvents();
-
-        /** @var Event $e */
-        foreach ($me as $e) {
-            $managedEvents[] = $e->getBaseView();
-        }
-
         $companiesView = array();
 
         $companies = $this->getCompanies();
@@ -153,7 +121,6 @@ class User extends BaseUser {
             $companiesView[] = $c->getBaseView();
         }
 
-        $view['managed_events'] = $managedEvents;
         $view['companies'] = $companiesView;
 
         return $view;

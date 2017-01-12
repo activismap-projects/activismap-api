@@ -55,7 +55,7 @@ class EventController extends EntityController {
         $event->setEndDate(intval($params['end_date']));
         $event->setCompany($company);
 
-        $this->setImage($request, 'image', $event);
+        $this->setImage($request, 'image', $event, true);
 
         $this->save($event);
 
@@ -64,7 +64,7 @@ class EventController extends EntityController {
 
     /**
      * @Route("/{identifier}")
-     * @Method("PUT")
+     * @Method("POST")
      * @param Request $request
      * @param $identifier
      * @return \Symfony\Component\HttpFoundation\Response

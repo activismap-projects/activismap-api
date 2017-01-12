@@ -108,6 +108,11 @@ class UserCompany {
     public function addRole($role) {
 
         $roles = unserialize($this->getRoles());
+
+        if (!is_array($roles)) {
+            $roles = array();
+        }
+
         if (!in_array($role, $roles)) {
             $roles[] = $role;
         }

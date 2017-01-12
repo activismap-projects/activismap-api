@@ -65,8 +65,8 @@ class CompanyController extends EntityController {
     }
 
     /**
-     * @Route("/{identifier")
-     * @Method("PUT")
+     * @Route("/{identifier}")
+     * @Method("POST")
      * @param Request $request
      * @param $identifier
      * @return \Symfony\Component\HttpFoundation\Response

@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @package ActivisMap\Entity
  * @ORM\Entity
  * @ORM\Table("company")
+ * @ORM\HasLifecycleCallbacks
  */
 class Company extends BaseGroup {
 
@@ -118,7 +119,13 @@ class Company extends BaseGroup {
         $this->logo = $logo;
     }
 
-
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setLastUpdate() {
+        parent::setLastUpdate();
+    }
 
     /**
      * @return array

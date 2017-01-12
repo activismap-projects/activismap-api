@@ -60,8 +60,8 @@ class QueryHelper {
             $endDate = EntityUtils::millis() + 2592000000;
         }
 
-        $queryBuilder->where('e.startDate >= :start_date')
-            ->andWhere('e.endDate <= :end_date')
+        $queryBuilder->where('e.startDate BETWEEN :start_date AND :end_date')
+            ->orWhere('e.endDate BETWEEN :start_date AND :end_date')
             ->setParameter('start_date', $startDate)
             ->setParameter('end_date', $endDate);
 
@@ -75,13 +75,12 @@ class QueryHelper {
 
         if ($type != null && $type != 'ALL') {
             $queryBuilder
-                ->andWhere('e.type = :type');
+                ->andWhere('e.type = :type')
+                ->setParameter('type', $type);
         }
 
 
-        $queryBuilder->andWhere('e.status = "WORKING"')
-            ->setParameter('type', $type)
-            ->setFirstResult($offset)
+        $queryBuilder->setFirstResult($offset)
             ->setMaxResults($limit);
 
         $queryString  = $queryBuilder->getQuery()->getSQL();

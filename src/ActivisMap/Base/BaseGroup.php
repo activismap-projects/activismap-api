@@ -50,7 +50,7 @@ class BaseGroup extends DOCGroup {
     public function __construct($name) {
         parent::__construct($name);
         $this->created = EntityUtils::millis();
-        $this->identifier = uniqid("C", true);
+        $this->identifier = uniqid("C");
     }
 
     /**
@@ -74,6 +74,9 @@ class BaseGroup extends DOCGroup {
      */
     public function getLastUpdate()
     {
+        if ($this->lastUpdate == null || $this->lastUpdate == 0) {
+            return $this->getCreated();
+        }
         return $this->lastUpdate;
     }
 
@@ -82,10 +85,7 @@ class BaseGroup extends DOCGroup {
      */
     public function setLastUpdate()
     {
-        if ($this->lastUpdate == null || $this->lastUpdate == 0) {
-            return $this->getCreated();
-        }
-        return $this->lastUpdate;
+        $this->lastUpdate = EntityUtils::millis();
     }
 
     /**

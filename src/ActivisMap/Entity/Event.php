@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class Activity
  * @package ActivisMap\Entity
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="event")
  */
 class Event extends BaseEntity {
@@ -35,13 +36,13 @@ class Event extends BaseEntity {
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     protected $startDate;
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     protected $endDate;
 
@@ -96,19 +97,19 @@ class Event extends BaseEntity {
     protected $image;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var integer
      */
     protected $participants;
 
     /**ñ
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var integer
      */
     protected $likes;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @var integer
      */
     protected $dislikes;
@@ -116,6 +117,7 @@ class Event extends BaseEntity {
     public function __construct() {
         parent::__construct('E');
         $this->status = 'WORKING';
+        $this->enabled = false;
     }
 
     /**
@@ -401,6 +403,14 @@ class Event extends BaseEntity {
         $userRoles = $company->getUserRoles($user);
 
         return $userRoles->isGrantedFor(Roles::ROLE_PUBLISHER);
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setLastUpdate() {
+        parent::setLastUpdate();
     }
 
     /**

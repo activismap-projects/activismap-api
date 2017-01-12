@@ -2,6 +2,7 @@
 
 namespace ActivisMap\Base;
 
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -9,6 +10,9 @@ abstract class EntityController extends ApiController {
 
     protected abstract function getRepositoryName();
 
+    /**
+     * @return EntityRepository
+     */
     protected function getRepository(){
         return $this->getDoctrine()
             ->getManager()
@@ -47,7 +51,7 @@ abstract class EntityController extends ApiController {
 
         $repo = $this->getRepository();
 
-        $entities = $repo->findOneBy(array('id'=>$id));
+        $entities = $this->findEntity($id);
 
         if(empty($entities)) throw new HttpException(404, "Not found");
 
@@ -67,7 +71,7 @@ abstract class EntityController extends ApiController {
 
         $repo = $this->getRepository();
 
-        $entity = $repo->findOneBy(array('id'=>$id));
+        $entity = $this->findEntity($id);
 
         if(empty($entity)) throw new HttpException(404, "Not found");
 
@@ -85,12 +89,33 @@ abstract class EntityController extends ApiController {
         return $entity;
     }
 
+    /**
+     * @param $id
+     * @return object|null
+     */
+    public function findEntity($id) {
+        $object = $this->getRepository()
+            ->createQueryBuilder('e')
+            ->where('e.id = :id')
+            ->orWhere('e.identifier = :id')
+            ->setParameter('id', $id)
+            ->getQuery()->getResult();
+
+        if (count($object) <= 0) {
+            $object = null;
+        } else {
+            $object = $object[0];
+        }
+
+        return $object;
+    }
+
     public function deleteAction($id){
         if(empty($id)) throw new HttpException(400, "Missing parameter 'id'");
 
         $repo = $this->getRepository();
 
-        $entity = $repo->find(array('id'=>$id));
+        $entity = $this->findEntity($id);
 
         if(empty($entity)) throw new HttpException(404, "Not found");
 

@@ -334,7 +334,7 @@ class ApiController extends FOSRestController{
             ->createQueryBuilder('u')
             ->where('u.id = :identifier')
             ->orWhere('u.identifier = :identifier')
-            ->setParameter('event_id', $id)
+            ->setParameter('identifier', $id)
             ->getQuery()->getResult();
 
         if (count($object) <= 0) {
@@ -435,6 +435,7 @@ class ApiController extends FOSRestController{
     public function setImage(Request $request, $paramName, $entity = null, $strict = false) {
         $params = $this->checkParams($request, array(), array($paramName . '_name', $paramName . '64'));
         $files = $this->checkFiles($request, array(), array($paramName));
+
 
         if ($entity != null) {
             if (array_key_exists($paramName, $files)) {

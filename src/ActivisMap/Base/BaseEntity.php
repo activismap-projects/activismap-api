@@ -33,13 +33,13 @@ abstract class BaseEntity {
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     protected $created;
 
     /**
      * @var integer
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     protected $lastUpdate;
 

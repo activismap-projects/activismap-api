@@ -84,6 +84,14 @@ class User extends BaseUser {
     }
 
     /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setLastUpdate() {
+        parent::setLastUpdate();
+    }
+
+    /**
      * @return array
      */
     public function getBaseView() {
@@ -96,13 +104,6 @@ class User extends BaseUser {
             'email' => $this->getEmail(),
             'username' => $this->getUsername(),
         );
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function setLastUpdate() {
-        parent::setLastUpdate();
     }
 
     /**

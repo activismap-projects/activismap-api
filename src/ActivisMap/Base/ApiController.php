@@ -433,7 +433,7 @@ class ApiController extends FOSRestController{
      * @param bool|false $strict
      */
     public function setImage(Request $request, $paramName, $entity = null, $strict = false) {
-        $params = $this->checkParams($request, array(), array($paramName . '_name', $paramName . '64'));
+        $params = $this->checkParams($request, array(), array($paramName, $paramName . '_name', $paramName . '64'));
         $files = $this->checkFiles($request, array(), array($paramName));
 
 
@@ -453,7 +453,13 @@ class ApiController extends FOSRestController{
                         call_user_func(array($entity, $setter), $filesParams['url']);
                     }
                 } else {
-                    throw new HttpException(400, 'Param "'. $paramName . '_name" is required if "' . $paramName . '64" is set');
+                    throw new HttpException(400, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
+                }
+            } else if (array_key_exists($paramName, $params) && filter_var($params[$paramName], FILTER_VALIDATE_URL)) {
+
+                $setter = $this->attributeToSetter($paramName);
+                if (method_exists($entity, $setter)) {
+                    call_user_func(array($entity, $setter), $params[$paramName]);
                 }
             } else if ($strict) {
                 throw new HttpException(400, 'Image no detected');
@@ -468,6 +474,12 @@ class ApiController extends FOSRestController{
                     $request->request->set($paramName, $filesParams['url']);
                 } else {
                     throw new HttpException(400, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
+                }
+            } else if (array_key_exists($paramName, $params) && filter_var($params[$paramName], FILTER_VALIDATE_URL)) {
+
+                $setter = $this->attributeToSetter($paramName);
+                if (method_exists($entity, $setter)) {
+                    call_user_func(array($entity, $setter), $params[$paramName]);
                 }
             } else if ($strict) {
                 throw new HttpException(400, 'Image no detected');

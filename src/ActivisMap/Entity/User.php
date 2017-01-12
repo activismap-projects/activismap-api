@@ -26,6 +26,12 @@ class User extends BaseUser {
      */
     protected $created_events;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @var string
+     */
+    protected $avatar;
+
     public function __construct() {
         parent::__construct();
         $this->created_events = new ArrayCollection();
@@ -71,6 +77,22 @@ class User extends BaseUser {
     }
 
     /**
+     * @return string
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    /**
+     * @param string $avatar
+     */
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+    }
+
+    /**
      * @return int
      */
     public function getLastLogin() {
@@ -103,6 +125,7 @@ class User extends BaseUser {
             'last_login' => $this->getLastLogin(),
             'email' => $this->getEmail(),
             'username' => $this->getUsername(),
+            'avatar' => $this->getAvatar(),
         );
     }
 
@@ -117,9 +140,9 @@ class User extends BaseUser {
 
         $companies = $this->getCompanies();
 
-        /** @var Company $c */
+        /** @var UserCompany $c */
         foreach ($companies as $c) {
-            $companiesView[] = $c->getBaseView();
+            $companiesView[] = $c->getUserView();
         }
 
         $view['companies'] = $companiesView;

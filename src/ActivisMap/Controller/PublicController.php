@@ -9,8 +9,10 @@
 namespace ActivisMap\Controller;
 
 use ActivisMap\Base\ApiController;
+use ActivisMap\Entity\Company;
 use ActivisMap\Entity\User;
 use ActivisMap\Util\Area;
+use ActivisMap\Util\Roles;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +34,7 @@ class PublicController extends ApiController {
     public function register(Request $request) {
 
         $params = $this->checkParams($request, array('password', 'username', 'email'),
-            array('person_name', 'avatar'));
+            array('person_name'));
 
         $password = $params['password'];
 
@@ -54,7 +56,19 @@ class PublicController extends ApiController {
         $user->setPersonName($personName);
         $user->setEnabled(true);
 
+        $this->setImage($request, 'avatar', $user);
+
         $this->save($user);
+
+        $company = new Company(ucwords($personName));
+        $company->setEmail($params['email']);
+        $company->setLogo($user->getAvatar());
+
+        $this->save($company);
+
+        $userRoles = $company->getUserRoles($user);
+        $userRoles->addRole(Roles::ROLE_SUPER_ADMIN);
+        $this->save($userRoles);
 
         $userView = $user->getExtendView();
 

@@ -30,7 +30,7 @@ security:
             #anonymous: true
 
         public:
-            pattern:    ^/api/v[0-9]+/public*
+            pattern:    ^/v[0-9]+/public*
             security:   false
 
         api:
@@ -40,5 +40,5 @@ security:
             anonymous:  true # can be omitted as its default value
 
     access_control:
-        - { path: ^/api/v[0-9]+/activity*, roles: [ ROLE_USER ] }
-        - { path: ^/api/v[0-9]+/user*, roles: [ ROLE_USER ] }
+        - { path: ^/v[0-9]+/activity*, roles: [ ROLE_USER ] }
+        - { path: ^/v[0-9]+/user*, roles: [ ROLE_USER ] }

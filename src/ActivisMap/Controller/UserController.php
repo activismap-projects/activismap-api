@@ -32,7 +32,7 @@ class UserController extends EntityController {
     public function self(Request $request) {
         $user = $this->getUser();
 
-        return $this->rest($user->getBaseView());
+        return $this->rest($user->getExtendView());
     }
 
     /**

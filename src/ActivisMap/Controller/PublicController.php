@@ -143,7 +143,7 @@ class PublicController extends ApiController {
     }
 
     /**
-     * @Route("/activity/{actId}")
+     * @Route("/event/{actId}")
      * @Method("GET")
      * @param Request $request
      * @param $actId

@@ -102,7 +102,7 @@ class PublicController extends ApiController {
         }
 
         if (array_key_exists('start_date', $params)) {
-            $endDate = intval($params['start_date']);
+            $startDate = intval($params['start_date']);
         }
 
         if (array_key_exists('limit', $params)) {

@@ -60,6 +60,8 @@ class QueryHelper {
             $endDate = EntityUtils::millis() + 2592000000;
         }
 
+        $this->logger->error('DATES: ', array($startDate, $endDate));
+
         $queryBuilder->where('e.startDate BETWEEN :start_date AND :end_date')
             ->orWhere('e.endDate BETWEEN :start_date AND :end_date')
             ->setParameter('start_date', $startDate)

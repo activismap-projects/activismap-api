@@ -39,7 +39,7 @@ class EventController extends EntityController {
         $company = $this->getCompany($identifier);
 
         $userRoles = $company->getUserRoles($user);
-        if (!$userRoles->isGrantedFor(Roles::ROLE_SUPER_ADMIN)) {
+        if (!$userRoles->isGrantedFor(Roles::ROLE_PUBLISHER)) {
             throw new HttpException(401, 'You do not have necessary permissions');
         }
 

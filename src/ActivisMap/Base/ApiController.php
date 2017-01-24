@@ -199,6 +199,8 @@ class ApiController extends FOSRestController{
             $ext = substr($filename, strpos($filename, '.'), strlen($filename));
             $filename = uniqid() . $ext;
 
+            $this->getLogger()->debug('SAVING FILE:', array($filename, $tempFile->getPath()));
+
             $f = fopen($tempFile->getPath(), 'rb');
             $content = fread($f, filesize($tempFile));
             $fs = new Filesystem();
@@ -212,6 +214,8 @@ class ApiController extends FOSRestController{
             $data['url'] = $baseUrl . '/files/' . $filename;
             $data['size'] = filesize($filepath . $filename);
             $data['mimeType'] = $tempFile->getClientMimeType();
+
+            $this->getLogger()->debug("SAVED", $data);
             return $data;
         }
 
@@ -229,6 +233,9 @@ class ApiController extends FOSRestController{
         if ($file != '' && $filename != '') {
             $ext = substr($filename, strpos($filename, '.'), strlen($filename));
             $filename = uniqid() . $ext;
+
+            $this->getLogger()->debug('SAVING FILE64:', array($filename));
+
             $fs = new Filesystem();
             $fs->dumpFile($filepath . $filename, base64_decode($file));
 
@@ -239,7 +246,7 @@ class ApiController extends FOSRestController{
             $data['url'] = $baseUrl . '/files/' . $filename;
             $data['size'] = filesize($filepath . $filename);
             $data['mimeType'] = mime_content_type($filepath.$filename);
-
+            $this->getLogger()->debug("SAVED64", $data);
             return $data;
         }
 

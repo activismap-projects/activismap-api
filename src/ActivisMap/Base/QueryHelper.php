@@ -44,7 +44,7 @@ class QueryHelper {
      * @param bool|true $asView
      * @return array
      */
-    public function searchEvents($type = 'ALL', $startDate = 0, $endDate = 0, $limit = 20, $offset = 1, $area = null, $asView = true) {
+    public function searchEvents($type = 'ALL', $startDate = 0, $endDate = 0, $limit = 20, $offset = 0, $area = null, $asView = true) {
         $type = strtoupper($type);
 
         $repo = $this->ac->getEventRepository();

@@ -199,7 +199,7 @@ class ApiController extends FOSRestController{
             $ext = substr($filename, strpos($filename, '.'), strlen($filename));
             $filename = uniqid() . $ext;
 
-            $f = fopen($tempFile, 'rb');
+            $f = fopen($tempFile->getPath(), 'rb');
             $content = fread($f, filesize($tempFile));
             $fs = new Filesystem();
             $fs->dumpFile($filepath . $filename, $content);

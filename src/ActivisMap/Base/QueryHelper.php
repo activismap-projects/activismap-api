@@ -36,6 +36,7 @@ class QueryHelper {
 
     /**
      * @param string|null $type
+     * @param null $category
      * @param int $startDate
      * @param int $endDate
      * @param int $limit
@@ -44,7 +45,7 @@ class QueryHelper {
      * @param bool|true $asView
      * @return array
      */
-    public function searchEvents($type = 'ALL', $startDate = 0, $endDate = 0, $limit = 20, $offset = 0, $area = null, $asView = true) {
+    public function searchEvents($type = 'ALL', $category = null, $startDate = 0, $endDate = 0, $limit = 20, $offset = 0, $area = null, $asView = true) {
         $type = strtoupper($type);
 
         $repo = $this->ac->getEventRepository();
@@ -77,6 +78,12 @@ class QueryHelper {
             $queryBuilder
                 ->andWhere('e.type = :type')
                 ->setParameter('type', $type);
+        }
+
+        if ($category != null) {
+            $queryBuilder
+                ->andWhere('e.categories = :category')
+                ->setParameter('category', '%' . $category . '%');
         }
 
 

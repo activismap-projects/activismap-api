@@ -84,7 +84,7 @@ class PublicController extends ApiController {
      */
     public function searchActivities(Request $request) {
 
-        $params = $this->checkParams($request, array(), array('type', 'start_date', 'end_date', 'limit', 'offset', 'area'));
+        $params = $this->checkParams($request, array(), array('type', 'category', 'start_date', 'end_date', 'limit', 'offset', 'area'));
 
         if (array_key_exists('type', $params)) {
             $type = strtoupper($params['type']);
@@ -96,6 +96,11 @@ class PublicController extends ApiController {
         $startDate = 0;
         $limit = 20;
         $offset = 0;
+        $category = null;
+
+        if (array_key_exists('category', $params)) {
+            $category = $params['category'];
+        }
 
         if (array_key_exists('end_date', $params)) {
             $endDate = intval($params['end_date']);
@@ -127,15 +132,15 @@ class PublicController extends ApiController {
                     $lng2 = floatval(explode(',', $point2)[1]);
 
                     $a = new Area($lat1, $lng1, $lat2, $lng2);
-                    $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset, $a);
+                    $acts = $this->getQueryHelper()->searchEvents($type, $category, $startDate, $endDate, $limit, $offset, $a);
                 } else {
-                    $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset);
+                    $acts = $this->getQueryHelper()->searchEvents($type, $category, $startDate, $endDate, $limit, $offset);
                 }
             } else {
-                $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset);
+                $acts = $this->getQueryHelper()->searchEvents($type, $category, $startDate, $endDate, $limit, $offset);
             }
         } else {
-            $acts = $this->getQueryHelper()->searchEvents($type, $startDate, $endDate, $limit, $offset);
+            $acts = $this->getQueryHelper()->searchEvents($type, $category, $startDate, $endDate, $limit, $offset);
         }
 
 

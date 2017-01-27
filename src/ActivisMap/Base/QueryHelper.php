@@ -82,8 +82,7 @@ class QueryHelper {
 
         if ($category != null) {
             $queryBuilder
-                ->andWhere('e.categories = :category')
-                ->setParameter('category', '%' . $category . '%');
+                ->andWhere('e.categories = %' . $category . '%');
         }
 
 

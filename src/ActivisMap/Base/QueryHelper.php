@@ -82,7 +82,7 @@ class QueryHelper {
 
         if ($category != null) {
             $queryBuilder
-                ->andWhere("e.categories = '%" . $category . "%'");
+                ->andWhere("e.categories LIKE '%" . $category . "%'");
         }
 
 

@@ -40,5 +40,6 @@ security:
             anonymous:  true # can be omitted as its default value
 
     access_control:
-        - { path: ^/v[0-9]+/activity*, roles: [ ROLE_USER ] }
+        - { path: ^/v[0-9]+/event*, roles: [ ROLE_USER ] }
+        - { path: ^/v[0-9]+/company*, roles: [ ROLE_USER ] }
         - { path: ^/v[0-9]+/user*, roles: [ ROLE_USER ] }

@@ -208,11 +208,7 @@ class ApiController extends FOSRestController{
 
             $this->getLogger()->debug('SAVING FILE:', array($filename, $tempFile->getPath()));
 
-            $f = fopen($tempFile->getPath(), 'rb');
-            $content = fread($f, filesize($tempFile));
-            $fs = new Filesystem();
-            $fs->dumpFile($filepath . $filename, $content);
-            fclose($f);
+            $tempFile->move($filepath, $filename);
 
             $baseUrl = "https://" . $_SERVER['HTTP_HOST'];
 
@@ -449,7 +445,7 @@ class ApiController extends FOSRestController{
     public function setImage(Request $request, $paramName, $entity = null, $strict = false) {
         $params = $this->checkParams($request, array(), array($paramName, $paramName . '_name', $paramName . '64'));
         $files = $this->checkFiles($request, array(), array($paramName));
-
+        //die(print_r($files, true));
 
         if ($entity != null) {
             if (array_key_exists($paramName, $files)) {

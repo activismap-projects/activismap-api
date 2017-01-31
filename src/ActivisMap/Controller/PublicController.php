@@ -186,15 +186,16 @@ class PublicController extends ApiController {
     }
 
     /**
-     * @Route("/addComment")
+     * @Route("/event/{identifier}/addComment")
      * @Method("POST")
      * @param Request $request
+     * @param $identifier
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function addComment(Request $request) {
-        $params = $this->checkParams($request, array('event_id', 'comment'));
+    public function addComment(Request $request, $identifier) {
+        $params = $this->checkParams($request, array('comment'));
 
-        $event = $this->getEvent($params['event_id']);
+        $event = $this->getEvent($identifier);
         $commentText = $params['comment'];
 
         $comment = new Comment();
@@ -207,15 +208,16 @@ class PublicController extends ApiController {
     }
 
     /**
-     * @Route("/comments")
+     * @Route("/event{identifier}/comments")
      * @Method("GET")
      * @param Request $request
+     * @param $identifier
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getComments(Request $request)    {
-        $params = $this->checkParams($request, array('event_id'), array('limit', 'offset'));
+    public function getComments(Request $request, $identifier)    {
+        $params = $this->checkParams($request, array('limit', 'offset'));
 
-        $event = $this->getEvent($params['event_id']);
+        $event = $this->getEvent($identifier);
         $limit = 20;
         $offset = 0;
 

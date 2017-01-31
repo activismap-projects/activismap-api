@@ -144,33 +144,6 @@ class EventController extends EntityController {
         return $this->rest($comment->getBaseView());
     }
 
-    /**
-     * @Route("/{identifier}/comments")
-     * @Method("GET")
-     * @param Request $request
-     * @param $identifier
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function getComments(Request $request, $identifier)    {
-        $params = $this->checkParams($request, array(), array('limit', 'offset'));
-
-        $event = $this->getEvent($identifier);
-        $limit = 20;
-        $offset = 0;
-
-        if (array_key_exists('limit', $params)) {
-            $limit = intval($params['limit']);
-        }
-
-        if (array_key_exists('offset', $params)) {
-            $offset = intval($params['offset']);
-        }
-
-        $comments = $this->getQueryHelper()->getComments($event, $limit, $offset);
-
-        return $this->rest($comments);
-    }
-
     protected function getRepositoryName()
     {
         return 'ActivisMap:Event';

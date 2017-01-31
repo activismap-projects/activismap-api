@@ -35,6 +35,7 @@ class Comment extends BaseEntity {
     private $user;
 
     /**
+     * @ORM/Column(type="string")
      * @var string
      */
     private $comment;

@@ -120,7 +120,7 @@ class QueryHelper {
 
         $comments = $queryBuilder = $repo->createQueryBuilder('e')
             ->select('e')
-            ->where('e.id = ' . $event->getId())
+            ->where('e.event_id = ' . $event->getId())
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();

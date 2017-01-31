@@ -115,7 +115,7 @@ class Event extends BaseEntity {
     protected $dislikes;
 
     /**
-     * @OneToMany(targetEntity="ActivisMap\Entity\Comment", mappedBy="event")
+     * @ORM\OneToMany(targetEntity="ActivisMap\Entity\Comment", mappedBy="event")
      * @var ArrayCollection
      */
     protected $comments;

@@ -29,7 +29,7 @@ class Comment extends BaseEntity {
 
     /**
      * @ORM\ManyToOne(targetEntity="ActivisMap\Entity\User")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * @var User
      */
     private $user;

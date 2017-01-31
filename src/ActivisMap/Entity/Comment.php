@@ -28,7 +28,7 @@ class Comment extends BaseEntity {
     private $event;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ActivisMap\Entity\User")
+     * @ORM\ManyToOne(targetEntity="ActivisMap\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * @var User
      */

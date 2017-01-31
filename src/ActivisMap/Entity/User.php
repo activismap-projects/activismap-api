@@ -32,10 +32,17 @@ class User extends BaseUser {
      */
     protected $avatar;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ActivisMap\Entity\Comment", mappedBy="event")
+     * @var ArrayCollection
+     */
+    protected $comments;
+
     public function __construct() {
         parent::__construct();
         $this->created_events = new ArrayCollection();
         $this->companies = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     /**

@@ -208,7 +208,7 @@ class PublicController extends ApiController {
     }
 
     /**
-     * @Route("/event{identifier}/comments")
+     * @Route("/event/{identifier}/comments")
      * @Method("GET")
      * @param Request $request
      * @param $identifier

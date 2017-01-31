@@ -69,7 +69,7 @@ class Comment extends BaseEntity {
     }
 
     /**
-     * @param User $user
+     * @param mixed $user
      */
     public function setUser($user)
     {

@@ -116,7 +116,7 @@ class QueryHelper {
      * @return array
      */
     public function getComments($event, $limit = 20, $offset = 0, $asView = true) {
-        $repo = $this->ac->getEventRepository();
+        $repo = $this->ac->getCommentRepository();
 
         $comments = $queryBuilder = $repo->createQueryBuilder('e')
             ->select('e')

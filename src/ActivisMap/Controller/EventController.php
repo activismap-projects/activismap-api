@@ -137,7 +137,7 @@ class EventController extends EntityController {
         $comment = new Comment();
         $comment->setEvent($event);
         $comment->setComment($commentText);
-        $comment->setUser($user->getId());
+        $comment->setUser($user);
 
         $this->save($comment);
 

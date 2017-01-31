@@ -114,10 +114,17 @@ class Event extends BaseEntity {
      */
     protected $dislikes;
 
+    /**
+     * @OneToMany(targetEntity="ActivisMap\Entity\Comment", mappedBy="event")
+     * @var ArrayCollection
+     */
+    protected $comments;
+
     public function __construct() {
         parent::__construct('E');
         $this->status = 'WORKING';
         $this->enabled = false;
+        $this->comments = new ArrayCollection();
     }
 
     /**
@@ -388,6 +395,14 @@ class Event extends BaseEntity {
         if ($this->dislikes > 1) {
             $this->dislikes--;
         }
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 
     /**

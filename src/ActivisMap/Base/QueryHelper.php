@@ -8,6 +8,7 @@
 
 namespace ActivisMap\Base;
 
+use ActivisMap\Entity\Comment;
 use ActivisMap\Entity\Event;
 use ActivisMap\Util\Area;
 use ActivisMap\Util\EntityUtils;
@@ -105,5 +106,35 @@ class QueryHelper {
         }
 
         return $acts;
+    }
+
+    /**
+     * @param Event $event
+     * @param int $limit
+     * @param int $offset
+     * @param bool $asView
+     * @return array
+     */
+    public function getComments($event, $limit = 20, $offset = 0, $asView = true) {
+        $repo = $this->ac->getEventRepository();
+
+        $comments = $queryBuilder = $repo->createQueryBuilder('e')
+            ->select('e')
+            ->where('e.event_id = ' . $event->getId())
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+
+        if ($asView) {
+            $views = array();
+            /** @var Comment $c */
+            foreach ($comments as $c) {
+                $views[] = $c->getBaseView();
+            }
+
+            return $views;
+        }
+
+        return $comments;
     }
 }

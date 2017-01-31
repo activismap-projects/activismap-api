@@ -50,6 +50,13 @@ class ApiController extends FOSRestController{
         return $this->getManager()->getRepository('ActivisMap:UserCompany');
     }
 
+    /**
+     * @return EntityRepository
+     */
+    public function getCommentRepository() {
+        return $this->getManager()->getRepository('ActivisMap:Comment');
+    }
+
     public function rest($data = null, $status = "ok", $message = "Request success", $httpCode = 200){
         $response = new ApiResponse(
             $data,$status,$message

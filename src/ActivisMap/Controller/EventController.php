@@ -9,6 +9,7 @@
 namespace ActivisMap\Controller;
 
 use ActivisMap\Base\EntityController;
+use ActivisMap\Entity\Comment;
 use ActivisMap\Entity\Event;
 use ActivisMap\Util\Roles;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -117,6 +118,57 @@ class EventController extends EntityController {
         }
 
         return $this->deleteAction($event->getId());
+    }
+
+    /**
+     * @Route("/{identifier}/addComment")
+     * @Method("POST")
+     * @param Request $request
+     * @param $identifier
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function addComment(Request $request, $identifier) {
+        $params = $this->checkParams($request, array('comment'));
+
+        $event = $this->getEvent($identifier);
+        $commentText = $params['comment'];
+        $user = $this->getUser();
+
+        $comment = new Comment();
+        $comment->setEvent($event);
+        $comment->setComment($commentText);
+        $comment->setUser($user);
+
+        $this->save($comment);
+
+        return $this->rest($comment->getBaseView());
+    }
+
+    /**
+     * @Route("/{identifier}/comments")
+     * @Method("GET")
+     * @param Request $request
+     * @param $identifier
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getComments(Request $request, $identifier)    {
+        $params = $this->checkParams($request, array(), array('limit', 'offset'));
+
+        $event = $this->getEvent($identifier);
+        $limit = 20;
+        $offset = 0;
+
+        if (array_key_exists('limit', $params)) {
+            $limit = intval($params['limit']);
+        }
+
+        if (array_key_exists('offset', $params)) {
+            $offset = intval($params['offset']);
+        }
+
+        $comments = $this->getQueryHelper()->getComments($event, $limit, $offset);
+
+        return $this->rest($comments);
     }
 
     protected function getRepositoryName()

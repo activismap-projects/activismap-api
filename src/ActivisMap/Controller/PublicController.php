@@ -9,6 +9,7 @@
 namespace ActivisMap\Controller;
 
 use ActivisMap\Base\ApiController;
+use ActivisMap\Entity\Comment;
 use ActivisMap\Entity\Company;
 use ActivisMap\Entity\User;
 use ActivisMap\Util\Area;
@@ -182,5 +183,54 @@ class PublicController extends ApiController {
         $this->save($event);
 
         return $this->rest($event->getExtendView());
+    }
+
+    /**
+     * @Route("/addComment")
+     * @Method("POST")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function addComment(Request $request) {
+        $params = $this->checkParams($request, array('event_id', 'comment'));
+
+        $event = $this->getEvent($params['event_id']);
+        $commentText = $params['comment'];
+
+        $comment = new Comment();
+        $comment->setEvent($event);
+        $comment->setComment($commentText);
+
+        $this->save($comment);
+
+        return $this->rest($comment->getBaseView());
+    }
+
+    /**
+     * @Route("/comments")
+     * @Method("GET")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getComments(Request $request)    {
+        $params = $this->checkParams($request, array('event_id'), array('limit', 'offset'));
+
+        $event = $this->getEvent($params['event_id']);
+        $limit = 20;
+        $offset = 0;
+
+        if (array_key_exists('limit', $params)) {
+            $limit = intval($params['limit']);
+        }
+
+        if (array_key_exists('offset', $params)) {
+            $offset = intval($params['offset']);
+        }
+
+        $comments = $this->getQueryHelper()->getComments($event, $limit, $offset);
+
+        return $this->rest($comments);
+
+
     }
 }

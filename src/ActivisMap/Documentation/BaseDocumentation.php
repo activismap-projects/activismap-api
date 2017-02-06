@@ -248,6 +248,25 @@
  */
 
 /**
+ * @apiDefine UserResponseList
+ * @apiSuccessExample {json} Success-Response
+ *      HTTP/1.1 200 OK
+ *      [
+ *          {
+ *              "id": 86,
+ *              "created": 1478615766041,
+ *              "last_update": 1478615766046,
+ *              "identifier": "U5821e2d609ec5",
+ *              "username": "User5821e2d5909c8",
+ *              "email": "User5821e2d5909c8@activismap.net",
+ *              "avatar": "https://localhost:8000/avatar_m.png",
+ *              "roles": [ "ROLE_PUBLISHER" ]
+ *          },
+ *          { . . . }
+ *      [
+ */
+
+/**
  * @apiDefine EventResponse
  * @apiSuccessExample {json} Success-Response
  *      HTTP/1.1 200 OK

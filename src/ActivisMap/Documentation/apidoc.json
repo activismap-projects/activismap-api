@@ -17,6 +17,7 @@
     "Session",
     "Public",
     "Event",
+    "Company",
     "User"
   ],
   "template": {

@@ -206,8 +206,6 @@ class ApiController extends FOSRestController{
             $ext = substr($filename, strpos($filename, '.'), strlen($filename));
             $filename = uniqid() . $ext;
 
-            $this->getLogger()->debug('SAVING FILE:', array($filename, $tempFile->getPath()));
-
             $tempFile->move($filepath, $filename);
 
             $baseUrl = "https://" . $_SERVER['HTTP_HOST'];
@@ -217,8 +215,6 @@ class ApiController extends FOSRestController{
             $data['url'] = $baseUrl . '/files/' . $filename;
             $data['size'] = filesize($filepath . $filename);
             $data['mimeType'] = $tempFile->getClientMimeType();
-
-            $this->getLogger()->debug("SAVED", $data);
             return $data;
         }
 

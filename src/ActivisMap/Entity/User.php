@@ -129,7 +129,6 @@ class User extends BaseUser {
             'identifier' => $this->getIdentifier(),
             'created' => $this->getCreated(),
             'last_update' => $this->getLastUpdate(),
-            'last_login' => $this->getLastLogin(),
             'email' => $this->getEmail(),
             'username' => $this->getUsername(),
             'avatar' => $this->getAvatar(),

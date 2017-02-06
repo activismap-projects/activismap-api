@@ -351,8 +351,8 @@ class ApiController extends FOSRestController{
             $company = $object[0];
         }
 
-        if ($checkNull) {
-            throw new ApiException(ApiError::COMPANY_NOT_FOUND, 'Event not found');
+        if ($company == null && $checkNull) {
+            throw new ApiException(ApiError::COMPANY_NOT_FOUND, 'Company not found');
         }
 
         return $company;

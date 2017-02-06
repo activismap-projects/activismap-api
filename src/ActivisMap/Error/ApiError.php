@@ -20,7 +20,7 @@ interface ApiError {
     const REGISTERED_USERNAME = array('error' => 'REGISTERED_USERNAME', 'httpCode' => 400);
     const REGISTERED_EMAIL = array('error' => 'REGISTERED_EMAIL', 'httpCode' => 400);
 
-    //Entity
+    //ENTITY
     const ENTITY_EXIST = array('error' => 'ENTITY_EXIST', 'httpCode' => 400);
     const USER_NOT_FOUND = array('error' => 'USER_NOT_FOUND', 'httpCode' => 404);
     const EVENT_NOT_FOUND = array('error' => 'EVENT_NOT_FOUND', 'httpCode' => 404);

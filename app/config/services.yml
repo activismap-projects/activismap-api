@@ -10,3 +10,9 @@ services:
 #    service_name:
 #        class: ActivisMap\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+
+  api_exception_subscriber:
+      class: ActivisMap\Error\ExceptionSubscriber
+      arguments: []
+      tags:
+          - { name: kernel.event_subscriber }

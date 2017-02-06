@@ -37,7 +37,7 @@ class UserController extends EntityController {
 
     /**
      * @Route("")
-     * @Method("PUT")
+     * @Method("POST")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */

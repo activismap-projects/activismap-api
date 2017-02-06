@@ -16,7 +16,7 @@
   "order": [
     "Session",
     "Public",
-    "Messaging",
+    "Event",
     "User"
   ],
   "template": {

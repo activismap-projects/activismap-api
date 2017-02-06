@@ -2,80 +2,61 @@
 include('BaseDocumentation.php');
 
 /**
- * @api {post} /api/v1/public/app/register RegisterUser
+ * @api {post} /v1/public/register RegisterUser
  * @apiVersion 1.0.0
  * @apiGroup Public
  * @apiName RegisterUser
- * @apiDescription Crear un nuevo Usuario
+ * @apiDescription Registro de un usuario
  * @apiParam {String} password Contraseña de la cuenta
- * @apiParam {String="password"} repassword Comprobación de la contraseña de la cuenta
- * @apiParam {String} [username="RandomUsername"] Nombre de usuario para la cuenta
- * @apiParam {String} [person_name="username"] Nombre personal del usuario
- * @apiParam {String} [public_key="RandomRSAPublicKey"] Clave pública del usuario
- * @apiParam {String} [private_key="RandomRSAPrivateKey"] Clave privada del usuario
+ * @apiParam {String} username Nombre de usuario para la cuenta
+ * @apiParam {String} email Dirección de correo electrónico
  * @apiUse BaseResponseParams
  * @apiUse UserResponseParams
  * @apiUse PARAM_REQUIRED
- * @apiUse PASS_NOT_MATCH
- * @apiUse USERNAME_EXIST
+ * @apiUse REGISTERED_USERNAME
+ * @apiUse REGISTERED_EMAIL
  * @apiUse UserResponse
  */
 
 /**
- * @api {get} /api/v1/public/app/:id/groups OrganizationGroups
+ * @api {get} /v1/public/search EventList
  * @apiVersion 1.0.0
  * @apiGroup Public
- * @apiName OrganizationGroups
- * @apiDescription Lista de grupos con <code>accesibility="PUBLIC"</code> de una organización
+ * @apiName EventList
+ * @apiDescription Búsqueda de eventos
+ * @apiParam {String} [type] Tipo de evento a buscar
+ * @apiParam {String} [category] Categoría de evento a buscar
+ * @apiParam {String} [start_date="CURRENT_DATE"] Fecha de mínima de inicio del evento a buscar representada en milisegundos.
+ * @apiParam {String} [end_date="3MONTHS_FORWARD"] Fecha de máxima de fin del evento a buscar representada en milisegundos.
+ * @apiParam {Number} [limit="20"] Límite de eventos a devolver.
+ * @apiParam {Number} [offset="0"] Indice del primer evento a devolver.
+ * @apiParam {String} [area=] Aŕea donde se realizará la busqueda. Formato: <code>latitude,longitude@latitude,longitude</code>.
  * @apiUse BaseResponseParams
- * @apiUse GroupResponseParams
- * @apiUse ORG_NOT_FOUND
- * @apiUse GroupResponseList
+ * @apiUse EventResponseParams
+ * @apiUse EventResponseList
  */
 
 /**
- * @api {get} /api/v1/public/app/search OrganizationSearch
+ * @api {get} /v1/public/event/:id EventAction
  * @apiVersion 1.0.0
  * @apiGroup Public
- * @apiName OrganizationSearch
- * @apiParam {String} [search="''"] Cadena de texto a coincidir con el nombre de las organizaciones
- * @apiParam {Number} [offset=1] Indice de la búsqueda limitado por el valor <code>limit</code>
- * @apiParam {Number} [limit=20] Límite de elementos a devolver
- * @apiParam {Number} [lat] Latitud de buúsqueda de los resultados
- * @apiParam {Number} [lon] Longitud de buúsqueda de los resultados
- * @apiParam {Number} [ratio] Radio de distacia en metros para realizar la búsqueda. Si <code>lat</code> o <code>lon</code> no son proporcionados, <code>ratio</code> será ignorado.
- * @apiDescription Busca organizaciones que incluyan el valor de <code>search</code> en su nombre y filtrada por los demás parámetros
- * @apiSuccess {JSONArray} data Resultados de la búsqueda
- * @apiSuccess {Number} count Número de resultados devueltos
- * @apiSuccess {Number} limit Número límite de resultados
- * @apiSuccess {Number} offset Indice de la búsqueda
- * @apiSuccessExample  {json} Success-Response
- *      HTTP/1.1 200 OK
- *      {
- *          "data": [
- *              {
- *                  "id": 87,
- *                  "created": 1478624453922,
- *                  "updated": 1478624453973,
- *                  "identifier": "Org582204c5e10ac",
- *                  "name": "BitExchange.tk",
- *                  "status": "WORKING",
- *                  "latitude": "0.005",
- *                  "longitude": "0.255",
- *                  "icon": "https://localhost:8000/files/582204c5e111a.png",
- *                  "application": { . . . },
- *                  "managers": { . . . },
- *                  "groups": { . . . },
- *                  "rating": {
- *                      "score": 5,
- *                      "total": 2,
- *                      "rating": 2.5,
- *                  }
- *              },
- *              { . . . }
- *          ],
- *          "count":1
- *          "limit":20
- *          "offset":1
- *      }
+ * @apiName EventAction
+ * @apiParam {String="LIKE", "DISLIKE", "NEUTRAL", "SUBSCRIBE", "UNSUBSCRIBE"} action Tipo de acción a relaizar sobre el evento
+ * @apiDescription Actualiza los datos del evento según la acción emitida
+ * @apiUse EventResponseParams
+ * @apiUse EventResponse
+ */
+
+/**
+ * @api {post} /v1/public/:id/addComment AnonymousComment
+ * @apiVersion 1.0.0
+ * @apiGroup Public
+ * @apiName AnonymousComment
+ * @apiParam {String} comment Texto del comentario a añadir.
+ * @apiDescription Añadir un comentario a un evento
+ * @apiUse BaseResponseParams
+ * @apiUse CommentResponseParams
+ * @apiUse CommentResponse
+ * @apiUse PARAM_REQUIRED
+ * @apiUse PUBLISHER_REQUIRED
  */

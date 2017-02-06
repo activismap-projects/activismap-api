@@ -61,16 +61,6 @@
  */
 
 /**
- * @apiDefine FILE_REQUIRED
- * @apiError (Errores) FILE_REQUIRED No se ha detectado ningún archivo en la llamada
- * @apiErrorExample {json} Error FILE_REQUIRED
- *      {
- *          "error":"FILE_REQUIRED",
- *          "message":"File not provided."
- *      }
- */
-
-/**
  * @apiDefine REGISTERED_USERNAME
  * @apiError (Errores) REGISTERED_USERNAME El valor del parámetro <code>username</code> ya existe
  * @apiErrorExample {json} Error REGISTERED_USERNAME
@@ -112,22 +102,22 @@
  */
 
 /**
+ * @apiDefine USER_NOT_FOUND
+ * @apiError (Errores) USER_NOT_FOUND El usuario no existe en la base de datos.
+ * @apiErrorExample {json} Error USER_NOT_FOUND
+ *      {
+ *          "error":"USER_NOT_FOUND",
+ *          "message":"USER_NOT_FOUND"
+ *      }
+ */
+
+/**
  * @apiDefine COMMENT_NOT_FOUND
  * @apiError (Errores) COMMENT_NOT_FOUND El comentario no existe en la base de datos.
  * @apiErrorExample {json} COMMENT_NOT_FOUND EVENT_NOT_FOUND
  *      {
  *          "error":"COMMENT_NOT_FOUND",
  *          "message":"COMMENT_NOT_FOUND"
- *      }
- */
-
-/**
- * @apiDefine USER_DISTINCT_CREATOR_REQUIRED
- * @apiError (Errores) USER_DISTINCT_CREATOR_REQUIRED El usuario a asignar no puede ser el creador del caso.
- * @apiErrorExample {json} Error USER_DISTINCT_CREATOR_REQUIRED
- *      {
- *          "error":"USER_DISTINCT_CREATOR_REQUIRED",
- *          "message":"You are the sender of this thread."
  *      }
  */
 
@@ -143,11 +133,11 @@
 
 /**
  * @apiDefine PUBLISHER_REQUIRED
- * @apiError (Errores) PUBLISHER_REQUIRED El usuario a asignar debe ser PUBLISHER de uno de las compañías que publicá el evento
+ * @apiError (Errores) PUBLISHER_REQUIRED El usuario debe ser PUBLISHER de la compañía que publica el evento
  * @apiErrorExample {json} Error PUBLISHER_REQUIRED
  *      {
  *          "error":"PUBLISHER_REQUIRED",
- *          "message":"The assigned user should be a employee of the groups that published the case."
+ *          "message":"The user not has PUBLISHER role in this company."
  *      }
  */
 
@@ -182,7 +172,7 @@
 
 /**
  * @apiDefine BaseResponseParams
- * @apiSuccess {Number} id ID del nuevo caso creado
+ * @apiSuccess {Number} id ID de la entidad
  * @apiSuccess {Number} created Fecha de creación en milisegundos
  * @apiSuccess {Number} updated Fecha de ultima modificación en milisegundos
  * @apiSuccess {String} identifier Identificador único
@@ -192,21 +182,21 @@
  * @apiDefine UserResponseParams
  * @apiSuccess {String} username Nombre de usuario
  * @apiSuccess {String} email Dirección de correo electrónico
- * @apiSuccess {String} avatar URL del avatar del usuario
+ * @apiSuccess {String} [avatar] URL del avatar del usuario
  */
 
 /**
  * @apiDefine CompanyResponseParams
  * @apiSuccess {String} name Nombre de la Company
  * @apiSuccess {String} email Dirección de correo electrónico
- * @apiSuccess {String} logo URL del logo de la compañía
+ * @apiSuccess {String} [logo] URL del logo de la compañía
  */
 
 /**
  * @apiDefine EventResponseParams
  * @apiSuccess {String} title Título del evento
  * @apiSuccess {String} description Descripción del evento
- * @apiSuccess {String} image URL de la imagenpromocional del evento
+ * @apiSuccess {String} [image] URL de la imagen promocional del evento
  * @apiSuccess {String} status Estado del evento
  * @apiSuccess {Number} latitude Latitud donde se ubica el evento
  * @apiSuccess {Number} longitude Longitud donde se ubica el evento
@@ -214,9 +204,9 @@
  * @apiSuccess {Number} end_date Fecha de finalización del evento representada en millisegundos
  * @apiSuccess {String} categories Categorías a las que pertenece el evento
  * @apiSuccess {String} type Tipo del evento
- * @apiSuccess {Number} participants Número aproximado de personas que podrían asistir al evento
- * @apiSuccess {Number} likes Número de personas a las que les gusta el evento
- * @apiSuccess {Number} dislikes Número de personas a las que no les gusta el evento
+ * @apiSuccess {Number} [participants] Número aproximado de personas que podrían asistir al evento
+ * @apiSuccess {Number} [likes] Número de personas a las que les gusta el evento
+ * @apiSuccess {Number} [dislikes] Número de personas a las que no les gusta el evento
  * @apiSuccess {JSON} creator Datos del usuario que ha creado el evento
  * @apiSuccess {JSON} company Datos de la compañía a cargo del evento
  */
@@ -276,6 +266,9 @@
  *          "end_date": 1486836082000,
  *          "categories": "LEARNING",
  *          "type": "ASSEMBLY",
+ *          "likes": 28,
+ *          "dislikes": 4,
+ *          "paticipants": 126,
  *          "creator": { . . . },
  *          "company": { . . . }
  *      }
@@ -317,7 +310,7 @@
  *          "identifier": "R58211a730d939",
  *          "created": 1478559844462,
  *          "last_update": 1478559844462,
- *          "contentType": "comment",
+ *          "comment": "This is a comment",
  *          "event": { . . . },
  *          "user": { . . . }
  *       }
@@ -333,7 +326,7 @@
  *              "identifier": "R58211a730d939",
  *              "created": 1478559844462,
  *              "last_update": 1478559844462,
- *              "contentType": "comment",
+ *              "comment": "This is a comment",
  *              "event": { . . . },
  *              "user": { . . . }
  *          },
@@ -373,4 +366,15 @@
  *          },
  *          { . . .},
  *      ]
+ */
+
+/**
+ * @apiDefine DeleteResponse
+ * @apiSuccessExample {json} Success-Response
+ *      HTTP/1.1 200 OK
+ *      {
+ *          "status": "success",
+ *          "message": "Deleted successfully"
+ *      }
+ *
  */

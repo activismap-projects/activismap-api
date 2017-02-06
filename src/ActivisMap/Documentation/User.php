@@ -2,7 +2,7 @@
 include('BaseDocumentation.php');
 
 /**
- * @api {get} /api/v1/user ReadUser
+ * @api {get} /v1/user ReadUser
  * @apiVersion 1.0.0
  * @apiGroup User
  * @apiName ReadUser
@@ -11,12 +11,12 @@ include('BaseDocumentation.php');
  * @apiUse BaseResponseParams
  * @apiUse UserResponseParams
  * @apiUse INVALID_CREDENTIALS
- * @apiUse NEOUSER_NOT_FOUND
+ * @apiUse USER_NOT_FOUND
  * @apiUse UserResponse
  */
 
 /**
- * @api {post} /api/v1/user UpdateUser
+ * @api {post} /v1/user UpdateUser
  * @apiVersion 1.0.0
  * @apiGroup User
  * @apiName UpdateUser
@@ -33,13 +33,13 @@ include('BaseDocumentation.php');
  * @apiUse UserResponseParams
  * @apiUse INVALID_CREDENTIALS
  * @apiUse PARAM_REQUIRED
- * @apiUse NEOUSER_NOT_FOUND
+ * @apiUse USER_NOT_FOUND
  * @apiUse INVALID_PASSWORD
  * @apiUse UserResponse
  */
 
 /**
- * @api {get} /api/v1/user/getUser/:id ReadAnotherUser
+ * @api {get} /v1/user/account/:id ReadAnotherUser
  * @apiVersion 1.0.0
  * @apiGroup User
  * @apiName ReadAnotherUser
@@ -48,64 +48,34 @@ include('BaseDocumentation.php');
  * @apiUse BaseResponseParams
  * @apiUse UserResponseParams
  * @apiUse INVALID_CREDENTIALS
- * @apiUse NEOUSER_NOT_FOUND
+ * @apiUse USER_NOT_FOUND
  * @apiUse UserResponse
  */
 
+
 /**
- * @api {get} /api/v1/user/organization/:id OrganizationStatistics
+ * @api {get} /v1/user/companies UserCompanies
  * @apiVersion 1.0.0
  * @apiGroup User
- * @apiName OrganizationStatistics
- * @apiDescription Obtener datos de una organizacion con sus estadísticas
+ * @apiName UserCompanies
+ * @apiDescription Datos de las compañias a las que pertenece el usuario
  * @apiHeader {String="Bearer access_token"} Authorization The bearer <code>access_token</code>.
  * @apiUse BaseResponseParams
- * @apiUse OrgResponseParams
+ * @apiUse CompanyResponseParams
  * @apiUse INVALID_CREDENTIALS
- * @apiUse NEOUSER_NOT_FOUND
- * @apiUse OrgResponse
+ * @apiUse USER_NOT_FOUND
+ * @apiUse CompanyResponseList
  */
 
 /**
- * @api {get} /api/v1/user/getManagedOrganizations ManagedOrganizations
- * @apiVersion 1.0.0
+ * @api {get} /v1/user/events UserEvents
  * @apiGroup User
- * @apiName ManagedOrganizations
- * @apiDescription Datos de las organizaciones administradas por el usuario
+ * @apiName UserEvents
+ * @apiDescription Datos de los eventos creados por el usuario
  * @apiHeader {String="Bearer access_token"} Authorization The bearer <code>access_token</code>.
  * @apiUse BaseResponseParams
- * @apiUse OrgResponseParams
+ * @apiUse EventResponseParams
  * @apiUse INVALID_CREDENTIALS
- * @apiUse NEOUSER_NOT_FOUND
- * @apiUse OrgResponse
- */
-
-/**
- * @api {post} /api/v1/user/setActiveGroup SetActiveGroup
- * @apiVersion 1.0.0
- * @apiGroup User
- * @apiName SetActiveGroup
- * @apiDescription Cambiar grupo activo
- * @apiHeader {String="Bearer access_token"} Authorization The bearer <code>access_token</code>.
- * @apiParam {Number} group_id ID del grupo que se va a activar
- * @apiUse BaseResponseParams
- * @apiUse UserResponseParams
- * @apiUse INVALID_CREDENTIALS
- * @apiUse NEOUSER_NOT_FOUND
- * @apiUse EMPLOYEE_REQUIRED
- * @apiUse UserResponse
- */
-
-/**
- * @api {get} /api/v1/user/getGroupOrganizationList GroupList
- * @apiVersion 1.0.0
- * @apiGroup User
- * @apiName GroupList
- * @apiDescription Lista de grupos donde el usuario tiene acceso, separado por organización
- * @apiHeader {String="Bearer access_token"} Authorization The bearer <code>access_token</code>.
- * @apiUse BaseResponseParams
- * @apiUse OrgResponseParams
- * @apiUse INVALID_CREDENTIALS
- * @apiUse NEOUSER_NOT_FOUND
- * @apiUse OrgResponse
+ * @apiUse USER_NOT_FOUND
+ * @apiUse EventResponseList
  */

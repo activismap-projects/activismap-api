@@ -16,5 +16,6 @@
 /vendor/
 /web/bundles/
 /web/files/
+/web/doc/
 .idea
 .*.swp

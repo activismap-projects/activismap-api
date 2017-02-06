@@ -12,6 +12,8 @@ use ActivisMap\Base\ApiController;
 use ActivisMap\Entity\Comment;
 use ActivisMap\Entity\Company;
 use ActivisMap\Entity\User;
+use ActivisMap\Error\ApiError;
+use ActivisMap\Error\ApiException;
 use ActivisMap\Util\Area;
 use ActivisMap\Util\Roles;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -40,20 +42,25 @@ class PublicController extends ApiController {
         $password = $params['password'];
 
         $username = $params['username'];
+        $email = $params['email'];
         $personName = array_key_exists('person_name', $params) ? $params['person_name'] : $username;
 
-        $users = $this->getManager()
-            ->getRepository('ActivisMap:User')
-            ->findBy(array('username' => $username));
+        $user = $this->getUser($username, false);
 
-        if (count($users) > 0) {
-            throw new HttpException(400, 'Username already exist');
+        if ($user != null) {
+            throw new ApiException(ApiError::REGISTERED_USERNAME, 'Username already exist');
+        }
+
+        $user = $this->getUser($email, false);
+
+        if ($user != null) {
+            throw new ApiException(ApiError::REGISTERED_EMAIL, 'Email already in use.');
         }
 
         $user = new User();
         $user->setPlainPassword($password);
         $user->setUsername($username);
-        $user->setEmail($params['email']);
+        $user->setEmail($email);
         $user->setPersonName($personName);
         $user->setEnabled(true);
 

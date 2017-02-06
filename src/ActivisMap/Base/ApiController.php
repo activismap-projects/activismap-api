@@ -6,6 +6,8 @@ use ActivisMap\Entity\Alert;
 use ActivisMap\Entity\Company;
 use ActivisMap\Entity\Event;
 use ActivisMap\Entity\User;
+use ActivisMap\Error\ApiError;
+use ActivisMap\Error\ApiException;
 use ActivisMap\Util\GCMSender;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\DBALException;
@@ -102,8 +104,7 @@ class ApiController extends FOSRestController{
             $aux = trim($request->get($array[$i]));
             if($em->getRepository('ActivisMap:'.$entity)->findOneBy(array($array[$i] => $aux))){
                 if ($throwError) {
-                    throw new HttpException(409, $array[$i] . " '" . $aux . "' already used");
-                }
+                    throw new ApiException(ApiError::ENTITY_EXIST, $array[$i] . " '" . $aux . "' already used");                }
 
                 return true;
             }
@@ -148,7 +149,7 @@ class ApiController extends FOSRestController{
         foreach ($params as $param) {
             //die(print_r($request->request->get($param), true));
             if(!$request->request->has($param) && !$request->query->has($param)) {
-                throw new HttpException(400, "Param '" . $param . "' not found");
+                throw new ApiException(ApiError::PARAM_REQUIRED, "Param '" . $param . "' not found");
             } else {
                 if ($request->query->has($param)) {
                     $req_params[$param] = $request->query->get($param);
@@ -179,7 +180,7 @@ class ApiController extends FOSRestController{
         $req_params = array();
         foreach ($params as $param) {
             if(!$request->files->has($param)) {
-                throw new HttpException(400, "File '" . $param . "' not provided");
+                throw new ApiException(ApiError::FILE_REQUIRED, "File '" . $param . "' not provided");
             } else {
                 $req_params[$param] = $request->files->get($param);
             }
@@ -218,7 +219,7 @@ class ApiController extends FOSRestController{
             return $data;
         }
 
-        throw new HttpException(400, 'Invalid file or filename');
+        throw new ApiException(ApiError::INVALID_FILE, 'Invalid file or filename');
     }
 
     /**
@@ -249,7 +250,7 @@ class ApiController extends FOSRestController{
             return $data;
         }
 
-        throw new HttpException(400, 'Invalid file or filename');
+        throw new ApiException(ApiError::INVALID_FILE, 'Invalid file or filename');
     }
 
     /**
@@ -296,7 +297,7 @@ class ApiController extends FOSRestController{
         }
 
         if ($user == null && $checkNull) {
-            throw new HttpException(404, 'User not found');
+            throw new ApiException(ApiError::USER_NOT_FOUND, 'User not found.');
         }
 
         return $user;
@@ -323,7 +324,7 @@ class ApiController extends FOSRestController{
         }
 
         if ($checkNull) {
-            $this->checkNull($event, 'Event not found.');
+            throw new ApiException(ApiError::EVENT_NOT_FOUND, 'Event not found');
         }
 
         return $event;
@@ -339,6 +340,7 @@ class ApiController extends FOSRestController{
         $object = $this->getCompanyRepository()
             ->createQueryBuilder('u')
             ->where('u.id = :identifier')
+            ->orWhere('u.email = :identifier')
             ->orWhere('u.identifier = :identifier')
             ->setParameter('identifier', $id)
             ->getQuery()->getResult();
@@ -350,17 +352,10 @@ class ApiController extends FOSRestController{
         }
 
         if ($checkNull) {
-            $this->checkNull($company, 'Company not found.');
+            throw new ApiException(ApiError::COMPANY_NOT_FOUND, 'Event not found');
         }
 
         return $company;
-    }
-
-    /**
-     * @return EntityManager
-     */
-    public function getNeoManager() {
-        return $this->get('neo4j.entity_manager');
     }
 
     /**
@@ -390,16 +385,6 @@ class ApiController extends FOSRestController{
      */
     public function getParameter($name) {
         return $this->container->getParameter($name);
-    }
-
-    /**
-     * @param integer $id
-     * @return User
-     */
-    protected function getUserById($id) {
-        return $this->getDoctrine()
-            ->getManager()
-            ->getRepository('ActivisMap:User')->find($id);
     }
 
     /**
@@ -441,7 +426,6 @@ class ApiController extends FOSRestController{
     public function setImage(Request $request, $paramName, $entity = null, $strict = false) {
         $params = $this->checkParams($request, array(), array($paramName, $paramName . '_name', $paramName . '64'));
         $files = $this->checkFiles($request, array(), array($paramName));
-        //die(print_r($files, true));
 
         if ($entity != null) {
             if (array_key_exists($paramName, $files)) {
@@ -459,7 +443,7 @@ class ApiController extends FOSRestController{
                         call_user_func(array($entity, $setter), $filesParams['url']);
                     }
                 } else {
-                    throw new HttpException(400, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
+                    throw new ApiException(ApiError::PARAM_REQUIRED, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
                 }
             } else if (array_key_exists($paramName, $params) && filter_var($params[$paramName], FILTER_VALIDATE_URL)) {
 
@@ -468,7 +452,7 @@ class ApiController extends FOSRestController{
                     call_user_func(array($entity, $setter), $params[$paramName]);
                 }
             } else if ($strict) {
-                throw new HttpException(400, 'Image no detected');
+                throw new ApiException(ApiError::PARAM_REQUIRED, 'Param "' . $paramName . '" is required."');
             }
         } else {
             if (array_key_exists($paramName, $files)) {
@@ -479,7 +463,7 @@ class ApiController extends FOSRestController{
                     $filesParams = $this->saveFile64($params[$paramName . '_name'], $params[$paramName . '64']);
                     $request->request->set($paramName, $filesParams['url']);
                 } else {
-                    throw new HttpException(400, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
+                    throw new ApiException(ApiError::PARAM_REQUIRED, 'Param "' . $paramName . '_name" is required if "' . $paramName . '64" is set');
                 }
             } else if (array_key_exists($paramName, $params) && filter_var($params[$paramName], FILTER_VALIDATE_URL)) {
 
@@ -488,7 +472,7 @@ class ApiController extends FOSRestController{
                     call_user_func(array($entity, $setter), $params[$paramName]);
                 }
             } else if ($strict) {
-                throw new HttpException(400, 'Image no detected');
+                throw new ApiException(ApiError::PARAM_REQUIRED, 'Param "' . $paramName . '" is required."');
             }
         }
 

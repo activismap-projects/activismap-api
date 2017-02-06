@@ -88,7 +88,7 @@ class UserController extends EntityController {
         }
 
 
-        $acts = $user->getManagedEvents()->toArray();
+        $acts = $user->getCreatedEvents();
 
 
         return $this->rest($acts);
@@ -106,8 +106,6 @@ class UserController extends EntityController {
 
         return $this->rest($user->getBaseView());
     }
-
-
 
     protected function getRepositoryName()
     {

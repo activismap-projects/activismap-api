@@ -11,6 +11,8 @@ namespace ActivisMap\Controller;
 use ActivisMap\Base\EntityController;
 use ActivisMap\Entity\Comment;
 use ActivisMap\Entity\Event;
+use ActivisMap\Error\ApiError;
+use ActivisMap\Error\ApiException;
 use ActivisMap\Util\Roles;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -41,7 +43,7 @@ class EventController extends EntityController {
 
         $userRoles = $company->getUserRoles($user);
         if (!$userRoles->isGrantedFor(Roles::ROLE_PUBLISHER)) {
-            throw new HttpException(401, 'You do not have necessary permissions');
+            throw new ApiException(ApiError::PUBLISHER_REQUIRED, 'You do not have necessary permissions');
         }
 
         $event = new Event();
@@ -114,7 +116,7 @@ class EventController extends EntityController {
         $userRole = $company->getUserRoles($user);
 
         if (!$userRole->isGrantedFor(Roles::ROLE_ADMIN)) {
-            throw new HttpException(401, 'You do not have necessary permissions.');
+            throw new ApiException(ApiError::ADMIN_REQUIRED, 'You do not have necessary permissions.');
         }
 
         return $this->deleteAction($event->getId());

@@ -12,6 +12,8 @@ use ActivisMap\Base\EntityController;
 use ActivisMap\Entity\Company;
 use ActivisMap\Entity\Event;
 use ActivisMap\Entity\UserCompany;
+use ActivisMap\Error\ApiError;
+use ActivisMap\Error\ApiException;
 use ActivisMap\Util\Roles;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -41,11 +43,10 @@ class CompanyController extends EntityController {
         $name = $params['name'];
         $email = $params['email'];
 
-        $coms = $this->getRepository()
-            ->findBy(array('email' => $email));
+        $company = $this->getCompany($email, false);
 
-        if (count($coms) > 0) {
-            throw new HttpException(401, 'Company email already exist');
+        if ($company != null) {
+            throw new ApiException(ApiError::REGISTERED_EMAIL, 'Company email already exist');
         }
 
         $company = new Company($name);
@@ -78,7 +79,7 @@ class CompanyController extends EntityController {
         $roles = $company->getUserRoles($user);
 
         if (!$roles->isGrantedFor(Roles::ROLE_SUPER_ADMIN)) {
-            throw new HttpException(401, 'You do not have necessary permissions');
+            throw new ApiException(ApiError::SUPER_ADMIN_REQUIRED, 'You do not have necessary permissions');
         }
 
         $this->setImage($request, 'logo');
@@ -105,7 +106,7 @@ class CompanyController extends EntityController {
         $roles = $company->getUserRoles($user);
 
         if (!$roles->isGrantedFor(Roles::ROLE_SUPER_ADMIN)) {
-            throw new HttpException(401, 'You do not have necessary permissions');
+            throw new ApiException(ApiError::SUPER_ADMIN_REQUIRED, 'You do not have necessary permissions');
         }
 
         return $this->deleteAction($company->getId());
@@ -202,7 +203,7 @@ class CompanyController extends EntityController {
         $role = strtoupper($params['role']);
 
         if (!Roles::isValidRole($role)) {
-            throw new HttpException(400, 'Role "' . $params['role'] . ' is not valid role.');
+            throw new ApiException(ApiError::INVALID_REQUEST_PERMISSIONS, 'Role "' . $params['role'] . ' is not valid role.');
         }
 
         $admin = $this->getUser();
@@ -213,7 +214,7 @@ class CompanyController extends EntityController {
         $userRole = $userRoles->getMaxRole();
 
         if (!Roles::canChangeRole($adminRole, $userRole, $role)) {
-            throw new HttpException(401, 'You do not have necessary permissions');
+            throw new ApiException(ApiError::INVALID_REQUEST_PERMISSIONS, 'You do not have necessary permissions');
         }
 
         $userRoles->setRoles(array($role));

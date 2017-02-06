@@ -1,0 +1,26 @@
+
+{
+  "name": "ActivisMap API Documentation",
+  "version": "1.0.0",
+  "description": "Documentación de la API de ActivisMap",
+  "title": "ActivisMap REST API",
+  "url" : "https://activismap-api.owldevelopers.com",
+  "sampleUrl" : "https://activismap-api.owldevelopers.com/app_dev.php",
+  "header": {
+    "title": "ActivisMap API",
+    "filename": "header.md"
+  },
+  "footer": {
+    "filename": "footer.md"
+  },
+  "order": [
+    "Session",
+    "Public",
+    "Messaging",
+    "User"
+  ],
+  "template": {
+    "withCompare": true,
+    "withGenerator": false
+  }
+}

@@ -323,7 +323,7 @@ class ApiController extends FOSRestController{
             $event = $object[0];
         }
 
-        if ($checkNull) {
+        if ($checkNull && $event == null) {
             throw new ApiException(ApiError::EVENT_NOT_FOUND, 'Event not found');
         }
 

@@ -58,7 +58,7 @@ class EventController extends EntityController {
         $event->setEndDate(intval($params['end_date']));
         $event->setCompany($company);
 
-        $this->setImage($request, 'image', $event, true);
+        $this->setImage($request, 'image', $event, false);
 
         $this->save($event);
 

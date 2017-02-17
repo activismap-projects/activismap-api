@@ -91,7 +91,7 @@ class Event extends BaseEntity {
     protected $description;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @var string
      */
     protected $image;

@@ -141,7 +141,7 @@ gos_web_socket:
         host: 0.0.0.0
         router:
             resources:
-                - '@AppBundle/Resources/config/pubsub/routing.yml'
+                - '@ActivisMap/Resources/config/pubsub/routing.yml'
     pushers:
         zmq:
             default: false

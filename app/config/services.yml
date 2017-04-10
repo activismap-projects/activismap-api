@@ -16,3 +16,22 @@ services:
       arguments: []
       tags:
           - { name: kernel.event_subscriber }
+
+  websocket_service:
+      class: ActivisMap\Util\WebSocket\SocketTopic
+      arguments:
+        - '@doctrine.orm.entity_manager'
+        - '@gos_web_socket.zmq.pusher'
+      tags:
+        - { name: gos_web_socket.rpc }
+
+  gos_web_socket_server.client_event.listener:
+      class: ActivisMap\Util\WebSocket\ClientListener
+      arguments:
+        - '@doctrine.orm.entity_manager'
+      tags:
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_error', method: onClientError }
+          - { name: kernel.event_listener, event: 'gos_web_socket.server_launched', method: onServerStart }
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_rejected', method: onClientRejected }

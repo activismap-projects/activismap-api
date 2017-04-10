@@ -2,7 +2,7 @@
 include('BaseDocumentation.php');
 
 /**
- * @api {post} /v1/company/ CreateCompany
+ * @api {post} /v1/company CreateCompany
  * @apiVersion 1.0.0
  * @apiGroup Company
  * @apiName CreateCompany

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Documentación de la API de ActivisMap",
   "title": "ActivisMap REST API",
-  "url" : "https://activismap-api.owldevelopers.com",
+  "url" : "https://activismap-api.owldevelopers.tk",
   "sampleUrl" : "https://activismap-api.owldevelopers.com/app_dev.php",
   "header": {
     "title": "ActivisMap API",

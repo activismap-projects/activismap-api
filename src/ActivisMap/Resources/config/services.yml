@@ -1,0 +1,6 @@
+services:
+  websocket_service:
+    class: ActivisMap\Util\WebSocket\SocketTopic
+    arguments:
+      - '@doctrine.orm.entity_manager'
+      - '@gos_web_socket.zmq.pusher'

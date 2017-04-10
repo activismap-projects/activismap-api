@@ -2,7 +2,7 @@
 include('BaseDocumentation.php');
 
 /**
- * @api {post} /v1/event/ CreateEvent
+ * @api {post} /v1/event CreateEvent
  * @apiVersion 1.0.0
  * @apiGroup Event
  * @apiName CreateEvent

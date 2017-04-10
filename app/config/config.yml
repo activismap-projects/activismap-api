@@ -131,3 +131,23 @@ jms_serializer:
     visitors:
         json:
             options: JSON_UNESCAPED_SLASHES
+
+gos_web_socket:
+    client:
+        firewall: secured_area #can be an array of firewalls
+        session_handler: '@session.handler.native_file'
+    server:
+        port: 9999
+        host: 0.0.0.0
+        router:
+            resources:
+                - '@AppBundle/Resources/config/pubsub/routing.yml'
+    pushers:
+        zmq:
+            default: false
+            host: 127.0.0.1
+            port: 5672
+            persistent: true
+            protocol: tcp
+    topics:
+        - '@websocket_service'

@@ -7,13 +7,3 @@ actvismap_notify:
             pattern: "[a-zA-Z0-9]+"
         id:
             pattern: "[a-zA-Z0-9]+" #accept all valid regex, don't put delimiters !
-
-actvismap_comment:
-    channel: comment/{type}/{id}
-    handler:
-        callback: 'activismap.comment' #related to the getName() or your RPC service
-    requirements:
-        type:
-            pattern: "[a-zA-Z0-9]+"
-        id:
-            pattern: "[a-zA-Z0-9]+" #accept all valid regex, don't put delimiters !
